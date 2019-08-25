@@ -13,7 +13,7 @@ A serverless api typescript starter for use as a template.
 # Architecture
 
 <p align="center">
-  <img src="docs/architecture/drawio-architecture.png"/>
+  <img max-width="50%" src="docs/architecture/drawio-architecture.png"/>
 </p>
 <!-- badge icons -->
 
