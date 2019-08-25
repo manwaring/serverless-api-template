@@ -12,7 +12,7 @@ A serverless api typescript starter for use as a template.
 
 # Architecture
 
-[architecture diagram](docs/architecture/drawio-architecture.png)
+![architecture diagram](docs/architecture/drawio-architecture.png)
 
 <!-- badge icons -->
 
