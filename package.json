@@ -8,7 +8,7 @@
     "e2e-test": "nyc node_modules/cucumber/bin/cucumber-js -p e2e",
     "precodecov": "nyc report --reporter=json --reporter=lcov",
     "codecov": "codecov -f coverage/*.json",
-    "generate-docs": "swagger-jsdoc -d docs/swagger-spec.yml -o docs/swagger.json"
+    "generate-docs": "swagger-jsdoc -d docs/swagger/swagger-spec.yml -o docs/swagger/swagger.json"
   },
   "dependencies": {
     "@iopipe/iopipe": "^1.15.1",

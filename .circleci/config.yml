@@ -131,7 +131,7 @@ jobs:
             # TODO figure out how to simplify getting the bucket name from outputs.yml
             STRING_BUCKET=$(yq .ApiDocumentationBucket < .serverless/stack-output/outputs.yml)
             BUCKET=$(sed -e 's/^"//' -e 's/"$//' <<< $STRING_BUCKET)
-            aws s3 sync docs s3://$BUCKET/ --delete --acl public-read
+            aws s3 sync docs/swagger s3://$BUCKET/ --delete --acl public-read
 
 workflows:
   version: 2

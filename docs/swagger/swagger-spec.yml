@@ -1,5 +1,5 @@
 info:
-  title: Serverless starter
+  title: Serverless API TypeScript
   version: '0.0.1'
   description: API for the serverless starter
   x-logo:
