@@ -1,0 +1,158 @@
+# Note: YAML anchors allow an object to be re-used, reducing duplication. The ampersand
+# declares an alias for an object, then later the `<<: *alias` syntax dereferences it.
+#
+# See http://blog.daemonl.com/2016/02/yaml.html and
+# https://medium.com/@kinghuang/docker-compose-anchors-aliases-extensions-a1e4105d70bd
+# for more information about how to use anchors.
+#
+# To validate changes use an online parser, eg. http://yaml-online-parser.appspot.com/
+anchors:
+  node-container-config: &node-container-config
+    docker:
+      - image: circleci/node:12.9.0
+        environment:
+          TERM: dumb
+
+  python-container-config: &python-container-config
+    docker:
+      - image: circleci/python:3.7.1
+        environment:
+          TERM: dumb
+
+  load-dependency-cache: &load-dependency-cache
+    restore_cache:
+      key: dependency-cache-{{ checksum "package.json" }}
+
+  configure-aws-access: &configure-aws-access
+    run:
+      name: Configure AWS access
+      command: |
+        mkdir -p ~/.aws
+        cat > ~/.aws/credentials << EOL
+        [default]
+        aws_access_key_id = $AWS_ACCESS_KEY
+        aws_secret_access_key = $AWS_SECRET_ACCESS_KEY
+        EOL
+
+## Circle CI configuration, see https://circleci.com/docs/2.0/configuration-reference/
+version: 2
+jobs:
+  install:
+    <<: *node-container-config
+    steps:
+      - checkout
+      - *load-dependency-cache
+      - run:
+          name: Install dependencies
+          command: npm i
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+
+  unit-test:
+    <<: *node-container-config
+    steps:
+      - checkout
+      - *load-dependency-cache
+      - run:
+          name: Run unit tests
+          command: npm run unit-test
+      - store_artifacts:
+          path: coverage
+      - run:
+          name: Send unit test coverage to Codecov
+          command: npm run codecov
+
+  deploy:
+    <<: *node-container-config
+    steps:
+      - checkout
+      - *load-dependency-cache
+      - *configure-aws-access
+      - run:
+          name: Deploy app
+          command: |
+            [[ ! -z "$STAGE" ]] || STAGE=${CIRCLE_BRANCH%%/*}
+            echo Deploying app for stage $STAGE
+            npm run deploy -- --stage $STAGE
+      # Save stack outputs for use during testing
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .serverless
+
+  e2e-test:
+    <<: *node-container-config
+    steps:
+      - checkout
+      - *load-dependency-cache
+      # load .serverless directory for stack outputs
+      - attach_workspace:
+          at: .
+      - run:
+          name: Run e2e tests
+          command: npm run e2e-test
+
+  generate-docs:
+    <<: *node-container-config
+    steps:
+      - checkout
+      - *load-dependency-cache
+      - run:
+          name: Generate documentation
+          command: npm run generate-docs
+      # Save generated docs for publishing
+      - persist_to_workspace:
+          root: .
+          paths:
+            - docs
+
+  publish-docs:
+    <<: *python-container-config
+    steps:
+      - checkout
+      - *load-dependency-cache
+      - *configure-aws-access
+      # load docs directory for generated documentation files
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install awscli
+          command: sudo pip install awscli
+      - run:
+          name: Install jq and yq
+          command: sudo apt-get install jq && sudo pip install yq
+      - run:
+          name: Publish api documentation
+          command: |
+            [[ ! -z "$STAGE" ]] || STAGE=${CIRCLE_BRANCH%%/*}
+            echo Publishing api documentation for stage $STAGE
+            # TODO figure out how to simplify getting the bucket name from outputs.yml
+            STRING_BUCKET=$(yq .ApiDocumentationBucket < .serverless/stack-output/outputs.yml)
+            BUCKET=$(sed -e 's/^"//' -e 's/"$//' <<< $STRING_BUCKET)
+            aws s3 sync docs s3://$BUCKET/ --delete --acl public-read
+
+workflows:
+  version: 2
+
+  test-and-deploy:
+    jobs:
+      - install
+      - unit-test:
+          requires:
+            - install
+      - deploy:
+          context: pariveda-serverless-aws
+          requires:
+            - unit-test
+      - e2e-test:
+          requires:
+            - deploy
+      - generate-docs:
+          requires:
+            - deploy
+      - publish-docs:
+          context: pariveda-serverless-aws
+          requires:
+            - generate-docs

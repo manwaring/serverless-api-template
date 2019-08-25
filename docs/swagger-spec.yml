@@ -1,0 +1,9 @@
+info:
+  title: Serverless starter
+  version: '0.0.1'
+  description: API for the serverless starter
+  x-logo:
+    url: https://user-images.githubusercontent.com/2955468/62672521-077f5200-b969-11e9-8247-a7a34540b41d.png
+    backgroundColor: '#FAFAFA'
+    altText: Logo
+apis: ['app/**/*.ts']

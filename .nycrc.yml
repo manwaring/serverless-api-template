@@ -1,0 +1,14 @@
+all: true
+cache: false
+
+exclude:
+  - '**/*unit*'
+  - '**/*e2e*'
+  - '**/*.d.ts'
+  - '**/*index.ts'
+  - '**/*/mock-data'
+  - coverage
+  - '**/*.js'
+
+extension:
+  - .ts

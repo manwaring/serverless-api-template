@@ -1,0 +1,68 @@
+service:
+  name: serverless-api-typescript
+
+plugins:
+  - serverless-plugin-iopipe
+  - serverless-webpack
+  - serverless-cloudformation-resource-counter
+  - serverless-plugin-iam-checker
+  - serverless-plugin-test-helper
+  - serverless-prune-plugin
+
+provider:
+  name: aws
+  stage: local
+  runtime: nodejs10.x
+  environment:
+    IOPIPE_TOKEN: ${env:IOPIPE_TOKEN}
+
+custom:
+  warningThreshold: 100 # configuration for serverless-cloudformation-resource-counter
+  prune: # configuration for serverles-prune-plugin
+    automatic: true
+    number: 3
+
+functions:
+  hello:
+    handler: app/hello.handler
+    events:
+      - http:
+          method: get
+          path: hello
+
+resources:
+  Resources:
+    ApiDocumentationBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: index.html
+
+    ApiDocumentationBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref ApiDocumentationBucket
+        PolicyDocument:
+          Id: APIDocumentationBucketReadPolicy
+          Version: '2012-10-17'
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: s3:GetObject
+              Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref ApiDocumentationBucket
+                  - /*
+
+  Outputs:
+    ApiDocumentationBucket:
+      Value: !Ref ApiDocumentationBucket
+      Description: Bucket for hosting Api documentation
+
+    ApiDocumentationUrl:
+      Value: { Fn::GetAtt: [ApiDocumentationBucket, WebsiteURL] }
+      Description: URL for Api documentation website
