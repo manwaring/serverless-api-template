@@ -12,8 +12,9 @@ A serverless api typescript starter for use as a template.
 
 # Architecture
 
+<p align="center">
 ![architecture diagram](docs/architecture/drawio-architecture.png)
-
+</p>
 <!-- badge icons -->
 
 [coverage]: https://flat.badgen.net/codecov/c/github/pariveda-accelerators/serverless-api-typescript/?icon=codecov
