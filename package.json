@@ -16,6 +16,7 @@
     "source-map-support": "^0.5.10"
   },
   "devDependencies": {
+    "@serverless/event-mocks": "^1.1.1",
     "@types/aws-lambda": "^8.10.17",
     "@types/chai": "^4.2.0",
     "@types/cucumber": "^4.0.7",

@@ -12,9 +12,6 @@ import { apiWrapper, ApiSignature } from '@manwaring/lambda-wrapper';
  *      200:
  *        description: hello world
  */
-export const handler = apiWrapper(async ({ event, success }: ApiSignature) => {
-  success({
-    message: 'Go Serverless Webpack (Typescript) v1.0! Your function executed successfully!',
-    input: event
-  });
+export const handler = apiWrapper(async ({ success }: ApiSignature) => {
+  success({ message: 'Go Serverless Webpack (Typescript) v1.0! Your function executed successfully!' });
 });
