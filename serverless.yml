@@ -15,6 +15,14 @@ provider:
   runtime: nodejs10.x
   environment:
     IOPIPE_TOKEN: ${env:IOPIPE_TOKEN}
+    HELLO_TABLE: { Ref: HelloTable }
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+        - dynamodb:PutItem
+        - dynamodb:DeleteItem
+      Resource: { Fn::GetAtt: [HelloTable, Arn] }
 
 custom:
   warningThreshold: 100 # configuration for serverless-cloudformation-resource-counter
@@ -23,15 +31,44 @@ custom:
     number: 3
 
 functions:
-  hello:
-    handler: app/hello.handler
+  get-all-hellos:
+    handler: app/hellos/get-all-hellos.handler
     events:
       - http:
           method: get
-          path: hello
+          path: hellos
+
+  add-hello:
+    handler: app/hellos/add-hello.handler
+    events:
+      - http:
+          method: post
+          path: hellos
+
+  delete-hello:
+    handler: app/hellos/delete-hello.handler
+    events:
+      - http:
+          method: delete
+          path: hellos/{id}
+          request:
+            parameters:
+              paths:
+                id: true
 
 resources:
   Resources:
+    HelloTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: helloId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: helloId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
     ApiDocumentationBucket:
       Type: AWS::S3::Bucket
       Properties:
