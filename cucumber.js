@@ -9,7 +9,7 @@ const unit = [
 const e2e = [
   'app/**/*.e2e.feature',
   '--require-module ts-node/register',
-  '--require app/**/*.test.e2e.ts',
+  '--require app/**/*.e2e.ts',
   '--format progress-bar',
   '--format node_modules/cucumber-pretty'
 ].join(' ');

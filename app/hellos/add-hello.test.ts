@@ -22,5 +22,6 @@ When('the add hello handler is invoked', function() {
 });
 
 Then('the hello message is returned', function() {
+  console.log(this.response);
   expect(this.response).to.not.equal(undefined);
 });
