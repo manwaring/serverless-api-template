@@ -1,38 +1,34 @@
-// import { Given, When, Then } from 'cucumber';
-// import { expect } from 'chai';
 // import { Chance } from 'chance';
+import { DynamoDB } from 'aws-sdk';
 import createEvent from '@serverless/event-mocks';
+import { Chance } from 'chance';
 import { handler } from './get-all-hellos';
 
-// const chance = new Chance();
+const chance = new Chance();
 
-// Given('a valid add hello request', function() {
-//   const headers = {
-//     'Test-Request': 'true',
-//     'Content-Type': 'application/json'
-//   };
-//   const body = JSON.stringify({ message: chance.sentence({ words: 10 }) });
-//   // @ts-ignore
-//   this.request = createEvent('aws:apiGateway', { headers, body });
-// });
+jest.mock('aws-sdk');
+const scan = jest.fn().mockReturnValue({
+  promise: jest.fn().mockResolvedValue({
+    Items: [
+      {
+        id: chance.guid(),
+        message: chance.paragraph()
+      }
+    ]
+  })
+});
+// @ts-ignore
+DynamoDB.DocumentClient.mockImplementation(() => ({ scan }));
 
-// When('the add hello handler is invoked', function() {
-//   const event = this.request;
-//   this.response = handler(event);
-// });
-
-// Then('the hello message is returned', function() {
-//   console.log(this.response);
-//   expect(this.response).to.not.equal(undefined);
-// });
-
-it('does something', () => {
+describe('Getting all hellos', () => {
   const headers = {
     'Test-Request': 'true'
     // 'Content-Type': 'application/json'
   };
-  // const body = JSON.stringify({ message: chance.sentence({ words: 10 }) });
   // @ts-ignore
   const event = createEvent('aws:apiGateway', { headers });
-  handler(event);
+
+  it('Gets all hellos', () => {
+    handler(event);
+  });
 });

@@ -2,7 +2,7 @@ service:
   name: serverless-api-typescript
 
 plugins:
-  - serverless-plugin-iopipe
+  # - serverless-plugin-iopipe
   - serverless-webpack
   - serverless-cloudformation-resource-counter
   - serverless-plugin-iam-checker
@@ -14,6 +14,7 @@ provider:
   stage: local
   runtime: nodejs10.x
   environment:
+    LAMBDA_WRAPPER_LOG: true
     IOPIPE_TOKEN: ${env:IOPIPE_TOKEN}
     HELLO_TABLE: { Ref: HelloTable }
   iamRoleStatements:
@@ -25,10 +26,10 @@ provider:
       Resource: { Fn::GetAtt: [HelloTable, Arn] }
 
 custom:
-  warningThreshold: 100 # configuration for serverless-cloudformation-resource-counter
   prune: # configuration for serverles-prune-plugin
     automatic: true
     number: 3
+  warningThreshold: 100 # configuration for serverless-cloudformation-resource-counter
 
 functions:
   get-all-hellos:
@@ -62,10 +63,10 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
-          - AttributeName: helloId
+          - AttributeName: id
             AttributeType: S
         KeySchema:
-          - AttributeName: helloId
+          - AttributeName: id
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
 
