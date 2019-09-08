@@ -1,3 +1,3 @@
 module.exports = {
-  collectCoverageFrom: ['src/**/*.ts', '!src/**/*index.ts']
+  collectCoverageFrom: ['app/**/*.ts', '!app/**/*.e2e.ts', '!app/**/*index.ts']
 };

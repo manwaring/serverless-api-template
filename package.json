@@ -4,12 +4,13 @@
   "description": "Serverless API example using Typescript",
   "scripts": {
     "deploy": "sls deploy",
-    "unit-tests": "jest --coverage",
+    "test": "jest --coverage",
+    "watch-tests": "jest --watch",
     "e2e-tests": "jest -c=jest.config.e2e.js",
     "generate-docs": "swagger-jsdoc -d docs/swagger/swagger-spec.yml -o docs/swagger/swagger.json"
   },
   "dependencies": {
-    "@manwaring/lambda-wrapper": "^1.0.6",
+    "@manwaring/lambda-wrapper": "^1.0.8",
     "source-map-support": "^0.5.10",
     "uuid": "^3.3.3"
   },

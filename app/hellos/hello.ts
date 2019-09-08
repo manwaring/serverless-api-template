@@ -1,13 +1,13 @@
-import * as v4 from 'uuid/v4';
+import { v4 } from 'uuid';
 
 export class Hello {
   id: string;
   message: string;
-  testRequest: boolean;
+  test: boolean;
 
-  constructor(body: any, testRequest: boolean) {
+  constructor(body: any, test: boolean) {
     this.id = v4();
     this.message = body.message;
-    this.testRequest = testRequest;
+    this.test = test;
   }
 }

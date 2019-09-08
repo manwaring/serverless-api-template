@@ -1,5 +1,5 @@
 import 'source-map-support/register';
-import { api, ApiSignature } from '@manwaring/lambda-wrapper';
+import { api } from '@manwaring/lambda-wrapper';
 import { helloTable } from './hello-table';
 
 /**
@@ -13,9 +13,9 @@ import { helloTable } from './hello-table';
  *      200:
  *        description: Hello messages
  */
-export const handler = api(async ({ path, success, error }: ApiSignature) => {
+export const handler = api(async ({ path, success, error }) => {
   try {
-    await helloTable.delete(path.id);
+    await helloTable.del(path.id);
     success();
   } catch (err) {
     error(err);

@@ -1,5 +1,5 @@
 import 'source-map-support/register';
-import { api, ApiSignature } from '@manwaring/lambda-wrapper';
+import { api } from '@manwaring/lambda-wrapper';
 import { Hello } from './hello';
 import { helloTable } from './hello-table';
 
@@ -14,7 +14,7 @@ import { helloTable } from './hello-table';
  *      200:
  *        description: Hello messages
  */
-export const handler = api(async ({ body, testRequest, success, error }: ApiSignature) => {
+export const handler = api(async ({ body, testRequest, success, error }) => {
   try {
     const hello = new Hello(body, testRequest);
     await helloTable.add(hello);

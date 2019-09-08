@@ -5,9 +5,7 @@
 
 [![build]][build-url] [![coverage]][coverage-url] [![dependabot]][dependabot-url] [![dependencies]][dependencies-url] [![dev-dependencies]][dev-dependencies-url] [![license]][license-url]
 
-# Serverless API TypeScript starter
-
-A serverless api typescript starter for use as a template.
+# AWS Serverless API with Serverless Framework & TypeScript
 
 # Architecture
 

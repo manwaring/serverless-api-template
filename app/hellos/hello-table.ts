@@ -18,7 +18,7 @@ export class HelloTable {
     return <Hello[]>res.Items;
   }
 
-  delete(id: string): Promise<any> {
+  del(id: string): Promise<any> {
     console.log('Deleting hello with id', id);
     return this.table.delete({ TableName, Key: { id } }).promise();
   }

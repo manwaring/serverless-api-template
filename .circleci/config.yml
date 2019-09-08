@@ -57,7 +57,7 @@ jobs:
       - *load-dependency-cache
       - run:
           name: Run unit tests
-          command: npm run unit-tests
+          command: npm test
       - store_artifacts:
           path: coverage
       - run:
