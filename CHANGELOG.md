@@ -8,7 +8,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/), 
 
 ### Added
 
-- Unit testing of application
+- Unit testing with Jest
+
+### Changed
+
+- Use Jest instead of Cucumber for E2E tests
 
 ## 0.1.0&nbsp;&nbsp;(2019-08-24)
 
