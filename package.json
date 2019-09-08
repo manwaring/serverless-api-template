@@ -11,7 +11,7 @@
     "codecov": "codecov -f coverage/*.json"
   },
   "dependencies": {
-    "@manwaring/lambda-wrapper": "^1.0.8",
+    "@manwaring/lambda-wrapper": "^1.0.9",
     "source-map-support": "^0.5.10",
     "uuid": "^3.3.3"
   },
