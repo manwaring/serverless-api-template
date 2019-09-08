@@ -32,6 +32,6 @@ describe('Hello CRUD', () => {
   it('Gets hellos after delete', async () => {
     const hellos = await get(URL, { json: true });
     expect(hellos).toBeInstanceOf(Array);
-    expect(hellos).toHaveLength(0);
+    expect(hellos).not.toContain(hello);
   });
 });
