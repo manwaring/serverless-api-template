@@ -1,19 +1,16 @@
 <p align="center">
-  <img height="150" src="https://user-images.githubusercontent.com/2955468/63644648-e1251a80-c6bb-11e9-9978-db90507e3b4c.png"/>&nbsp;&nbsp;&nbsp;&nbsp;
-  <img height="150" src="https://user-images.githubusercontent.com/2955468/63644641-b5a23000-c6bb-11e9-9e5c-600a5e2a402d.png"/>&nbsp;&nbsp;
+  <img height="150" src="https://user-images.githubusercontent.com/2955468/63987740-58392500-caa7-11e9-8c2e-06fc5fe9b91d.png"/>
   <img height="150" src="https://user-images.githubusercontent.com/2955468/62672521-077f5200-b969-11e9-8247-a7a34540b41d.png"/>
 </p>
 
 [![build]][build-url] [![coverage]][coverage-url] [![dependabot]][dependabot-url] [![dependencies]][dependencies-url] [![dev-dependencies]][dev-dependencies-url] [![license]][license-url]
 
-# Serverless API TypeScript starter
-
-A serverless api typescript starter for use as a template.
+# AWS Serverless API with Serverless Framework & TypeScript
 
 # Architecture
 
 <p align="center">
-  <img max-width="50%" src="docs/architecture/drawio-architecture.png"/>
+  <img max-width="20%" src="docs/architecture/drawio-architecture.png"/>
 </p>
 <!-- badge icons -->
 

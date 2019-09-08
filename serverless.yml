@@ -2,7 +2,7 @@ service:
   name: serverless-api-typescript
 
 plugins:
-  - serverless-plugin-iopipe
+  # - serverless-plugin-iopipe
   - serverless-webpack
   - serverless-cloudformation-resource-counter
   - serverless-plugin-iam-checker
@@ -14,24 +14,62 @@ provider:
   stage: local
   runtime: nodejs10.x
   environment:
+    LAMBDA_WRAPPER_LOG: true
     IOPIPE_TOKEN: ${env:IOPIPE_TOKEN}
+    HELLO_TABLE: { Ref: HelloTable }
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+        - dynamodb:PutItem
+        - dynamodb:DeleteItem
+      Resource: { Fn::GetAtt: [HelloTable, Arn] }
 
 custom:
-  warningThreshold: 100 # configuration for serverless-cloudformation-resource-counter
   prune: # configuration for serverles-prune-plugin
     automatic: true
     number: 3
+  warningThreshold: 100 # configuration for serverless-cloudformation-resource-counter
 
 functions:
-  hello:
-    handler: app/hello.handler
+  get-all-hellos:
+    handler: app/hellos/get-all-hellos.handler
     events:
       - http:
           method: get
-          path: hello
+          path: hellos
+
+  add-hello:
+    handler: app/hellos/add-hello.handler
+    events:
+      - http:
+          method: post
+          path: hellos
+
+  delete-hello:
+    handler: app/hellos/delete-hello.handler
+    events:
+      - http:
+          method: delete
+          path: hellos/{id}
+          request:
+            parameters:
+              paths:
+                id: true
 
 resources:
   Resources:
+    HelloTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
     ApiDocumentationBucket:
       Type: AWS::S3::Bucket
       Properties:

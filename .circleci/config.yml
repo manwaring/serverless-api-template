@@ -57,7 +57,7 @@ jobs:
       - *load-dependency-cache
       - run:
           name: Run unit tests
-          command: npm run unit-test
+          command: npm test
       - store_artifacts:
           path: coverage
       - run:
@@ -92,7 +92,7 @@ jobs:
           at: .
       - run:
           name: Run e2e tests
-          command: npm run e2e-test
+          command: npm run e2e-tests
 
   generate-docs:
     <<: *node-container-config
