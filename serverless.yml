@@ -26,10 +26,12 @@ provider:
       Resource: { Fn::GetAtt: [HelloTable, Arn] }
 
 custom:
-  prune: # configuration for serverles-prune-plugin
+  # configuration for serverles-prune-plugin
+  prune:
     automatic: true
     number: 3
-  warningThreshold: 100 # configuration for serverless-cloudformation-resource-counter
+  # configuration for serverless-cloudformation-resource-counter
+  warningThreshold: 100
 
 functions:
   get-all-hellos:
