@@ -64,23 +64,23 @@ jobs:
           name: Send unit test coverage to Codecov
           command: npm run codecov
 
-  deploy:
-    <<: *node-container-config
-    steps:
-      - checkout
-      - *load-dependency-cache
-      - *configure-aws-access
-      - run:
-          name: Deploy app
-          command: |
-            [[ ! -z "$STAGE" ]] || STAGE=${CIRCLE_BRANCH%%/*}
-            echo Deploying app for stage $STAGE
-            npm run deploy -- --stage $STAGE
-      # Save stack outputs for use during testing
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .serverless
+  # deploy:
+  #   <<: *node-container-config
+  #   steps:
+  #     - checkout
+  #     - *load-dependency-cache
+  #     - *configure-aws-access
+  #     - run:
+  #         name: Deploy app
+  #         command: |
+  #           [[ ! -z "$STAGE" ]] || STAGE=${CIRCLE_BRANCH%%/*}
+  #           echo Deploying app for stage $STAGE
+  #           npm run deploy -- --stage $STAGE
+  #     # Save stack outputs for use during testing
+  #     - persist_to_workspace:
+  #         root: .
+  #         paths:
+  #           - .serverless
 
   e2e-test:
     <<: *node-container-config
@@ -93,6 +93,50 @@ jobs:
       - run:
           name: Run e2e tests
           command: npm run e2e-tests
+
+  deploy:
+    description: Deploy the app to the specified stage
+    <<: *container-config
+    parameters:
+      stage:
+        description: Stage to deploy to
+        type: string
+    steps:
+      - checkout
+      - *load-cache
+      - *configure-aws-access
+      - run:
+          name: Deploy stack
+          command: |
+            STAGE=<< parameters.stage >>
+            [[ ! -z "$STAGE" ]] || STAGE=${CIRCLE_BRANCH%%/*}
+            echo Deploying app for stage $STAGE
+            # npm run deploy -- --stage $STAGE
+      # save the .serverless folder to enable looking up and calling the endpoints during e2e testing
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .serverless
+
+  test-deployed-app:
+    description: Test the app deployed to the specified stage
+    <<: *container-config
+    parameters:
+      stage:
+        description: Stage to test
+        type: string
+    steps:
+      - checkout
+      - *load-cache
+      - *configure-aws-access
+      - run:
+          name: Test deployed stack
+          command: npm run e2e-test
+      # save the .serverless folder to enable looking up and calling the endpoints during e2e testing
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .serverless
 
   generate-docs:
     <<: *node-container-config
@@ -143,12 +187,28 @@ workflows:
           requires:
             - install
       - deploy:
+          name: deploy-branch
           context: pariveda-serverless-aws
-          requires:
-            - unit-test
-      - e2e-test:
-          requires:
-            - deploy
+          requires: [test]
+      - test-deployed-app:
+          name: test-staging
+          requires: [deploy-branch]
+      - deploy:
+          name: deploy-branch2
+          context: pariveda-serverless-aws
+          stage: branch2
+          requires: [test]
+      - test-deployed-app:
+          name: test-staging
+          stage: branch2
+          requires: [deploy-branch2]
+      # - deploy:
+      #     context: pariveda-serverless-aws
+      #     requires:
+      #       - unit-test
+      # - e2e-test:
+      #     requires:
+      #       - deploy
       - generate-docs:
           requires:
             - deploy
