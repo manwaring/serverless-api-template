@@ -186,7 +186,7 @@ workflows:
       - deploy:
           name: deploy-branch
           context: pariveda-serverless-aws
-          requires: [test]
+          requires: [unit-test]
       - test-deployed-app:
           name: test-branch
           requires: [deploy-branch]
