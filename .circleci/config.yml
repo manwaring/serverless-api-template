@@ -100,7 +100,6 @@ jobs:
     parameters:
       stage:
         description: Stage to deploy to
-        default: ''
         type: string
     steps:
       - checkout
@@ -125,7 +124,6 @@ jobs:
     parameters:
       stage:
         description: Stage to test
-        default: ''
         type: string
     steps:
       - checkout
