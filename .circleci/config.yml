@@ -96,7 +96,7 @@ jobs:
 
   deploy:
     description: Deploy the app to the specified stage
-    <<: *container-config
+    <<: *node-container-config
     parameters:
       stage:
         description: Stage to deploy to
@@ -120,7 +120,7 @@ jobs:
 
   test-deployed-app:
     description: Test the app deployed to the specified stage
-    <<: *container-config
+    <<: *node-container-config
     parameters:
       stage:
         description: Stage to test
