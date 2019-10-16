@@ -132,9 +132,9 @@ jobs:
       - *load-dependency-cache
       - attach_workspace:
           at: .
-      - run:
-          name: Test deployed stack
-          command: npm run e2e-test
+      # - run:
+      #     name: Test deployed stack
+      #     command: npm run e2e-test
 
   generate-docs:
     <<: *node-container-config
