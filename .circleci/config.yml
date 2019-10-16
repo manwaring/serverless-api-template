@@ -82,17 +82,17 @@ jobs:
   #         paths:
   #           - .serverless
 
-  e2e-test:
-    <<: *node-container-config
-    steps:
-      - checkout
-      - *load-dependency-cache
-      # load .serverless directory for stack outputs
-      - attach_workspace:
-          at: .
-      - run:
-          name: Run e2e tests
-          command: npm run e2e-tests
+  # e2e-test:
+  #   <<: *node-container-config
+  #   steps:
+  #     - checkout
+  #     - *load-dependency-cache
+  #     # load .serverless directory for stack outputs
+  #     - attach_workspace:
+  #         at: .
+  #     - run:
+  #         name: Run e2e tests
+  #         command: npm run e2e-tests
 
   deploy:
     description: Deploy the app to the specified stage
@@ -100,6 +100,7 @@ jobs:
     parameters:
       stage:
         description: Stage to deploy to
+        default: ''
         type: string
     steps:
       - checkout
@@ -124,6 +125,7 @@ jobs:
     parameters:
       stage:
         description: Stage to test
+        default: ''
         type: string
     steps:
       - checkout
