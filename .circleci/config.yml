@@ -35,7 +35,7 @@ anchors:
         EOL
 
 ## Circle CI configuration, see https://circleci.com/docs/2.0/configuration-reference/
-version: 2
+version: 2.1
 jobs:
   install:
     <<: *node-container-config
@@ -182,20 +182,19 @@ workflows:
     jobs:
       - install
       - unit-test:
-          requires:
-            - install
+          requires: [install]
       - deploy:
           name: deploy-branch
           context: pariveda-serverless-aws
           requires: [test]
       - test-deployed-app:
-          name: test-staging
+          name: test-branch
           requires: [deploy-branch]
       - deploy:
           name: deploy-branch2
           context: pariveda-serverless-aws
           stage: branch2
-          requires: [test]
+          requires: [test-branch]
       - test-deployed-app:
           name: test-staging
           stage: branch2
@@ -209,7 +208,7 @@ workflows:
       #       - deploy
       - generate-docs:
           requires:
-            - deploy
+            - deploy-branch
       - publish-docs:
           context: pariveda-serverless-aws
           requires:
