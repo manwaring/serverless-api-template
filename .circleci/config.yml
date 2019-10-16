@@ -28,7 +28,7 @@ anchors:
       name: Configure AWS access
       command: |
         mkdir -p ~/.aws
-        cat > ~/.aws/credentials << EOL
+        cat > ~/.aws/credentials \<< EOL
         [default]
         aws_access_key_id = $AWS_ACCESS_KEY
         aws_secret_access_key = $AWS_SECRET_ACCESS_KEY
@@ -109,7 +109,7 @@ jobs:
       - run:
           name: Deploy stack
           command: |
-            STAGE=\<< parameters.stage >>
+            STAGE=<< parameters.stage >>
             [[ ! -z "$STAGE" ]] || STAGE=${CIRCLE_BRANCH%%/*}
             echo Deploying app for stage $STAGE
             # npm run deploy -- --stage $STAGE
