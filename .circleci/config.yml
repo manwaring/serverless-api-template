@@ -103,7 +103,7 @@ jobs:
         type: string
     steps:
       - checkout
-      - *load-cache
+      - *load-dependency-cache
       - *configure-aws-access
       - run:
           name: Deploy stack
@@ -127,16 +127,12 @@ jobs:
         type: string
     steps:
       - checkout
-      - *load-cache
-      - *configure-aws-access
+      - *load-dependency-cache
+      - attach_workspace:
+          at: .
       - run:
           name: Test deployed stack
           command: npm run e2e-test
-      # save the .serverless folder to enable looking up and calling the endpoints during e2e testing
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .serverless
 
   generate-docs:
     <<: *node-container-config
