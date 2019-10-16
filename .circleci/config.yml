@@ -112,7 +112,7 @@ jobs:
             STAGE=<< parameters.stage >>
             [[ ! -z "$STAGE" ]] || STAGE=${CIRCLE_BRANCH%%/*}
             echo Deploying app for stage $STAGE
-            # npm run deploy -- --stage $STAGE
+            npm run deploy -- --stage $STAGE
       # save the .serverless folder to enable looking up and calling the endpoints during e2e testing
       - persist_to_workspace:
           root: .
