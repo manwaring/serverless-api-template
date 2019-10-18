@@ -100,6 +100,7 @@ jobs:
       - *configure-aws-access
       - run:
           name: Deploy stack
+          no_output_timeout: 90m # increase timeout to allow for CloudFront deployment
           command: |
             STAGE=<< parameters.stage >>
             [[ ! -z "$STAGE" ]] || STAGE=${CIRCLE_BRANCH%%/*}
