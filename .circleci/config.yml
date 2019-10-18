@@ -166,7 +166,8 @@ workflows:
     jobs:
       # Always install, unit test, and generate API documentation
       - install
-      - generate-docs
+      - generate-docs:
+          requires: [install]
       - unit-test:
           requires: [install]
 
