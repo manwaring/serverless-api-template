@@ -70,16 +70,16 @@ functions:
               paths:
                 id: true
 
-  update-message:
-    handler: app/messages/update.handler
-    events:
-      - http:
-          method: put
-          path: messages/{id}
-          request:
-            parameters:
-              paths:
-                id: true
+  # update-message:
+  #   handler: app/messages/update.handler
+  #   events:
+  #     - http:
+  #         method: put
+  #         path: messages/{id}
+  #         request:
+  #           parameters:
+  #             paths:
+  #               id: true
 
   invalidateCache:
     handler: app/cache/invalidate.handler
