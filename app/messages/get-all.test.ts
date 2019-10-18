@@ -3,7 +3,7 @@ import { Chance } from 'chance';
 
 const chance = new Chance();
 
-describe('Get all hellos', () => {
+describe('Get all messages', () => {
   // @ts-ignore
   const event = createEvent('aws:apiGateway', {
     headers: { 'content-type': 'application/json', 'Test-Request': 'true' }
@@ -30,24 +30,24 @@ describe('Get all hellos', () => {
   });
 
   it('Success handled correctly', async () => {
-    const mockHello = { id: chance.guid(), message: chance.paragraph() };
-    const mockGetAll = jest.fn(() => [mockHello]);
-    jest.mock('./hello-table', () => ({ helloTable: { getAll: mockGetAll } }));
-    const { handler } = require('./get-all-hellos');
+    const mockMessage = { id: chance.guid(), message: chance.paragraph() };
+    const mockGetAll = jest.fn(() => [mockMessage]);
+    jest.mock('./table', () => ({ messagesTable: { getAll: mockGetAll } }));
+    const { handler } = require('./get-all');
 
     await handler(event, context, callback);
     expect(callback).not.toThrow();
   });
 
   it('Errors handled correctly', async () => {
-    jest.mock('./hello-table', () => ({
-      helloTable: {
+    jest.mock('./table', () => ({
+      messagesTable: {
         getAll: jest.fn(() => {
           throw new Error('error');
         })
       }
     }));
-    const { handler } = require('./get-all-hellos');
+    const { handler } = require('./get-all');
 
     await handler(event, context, callback);
     expect(callback).toHaveBeenCalledWith(new Error('error'));

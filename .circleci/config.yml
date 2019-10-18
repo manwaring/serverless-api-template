@@ -9,9 +9,7 @@
 anchors:
   node-container-config: &node-container-config
     docker:
-      - image: circleci/node:12.9.0
-        environment:
-          TERM: dumb
+      - image: circleci/node
 
   python-container-config: &python-container-config
     docker:
@@ -33,6 +31,16 @@ anchors:
         aws_access_key_id = $AWS_ACCESS_KEY
         aws_secret_access_key = $AWS_SECRET_ACCESS_KEY
         EOL
+
+  only-branches: &only-branches
+    filters:
+      branches:
+        ignore: master
+
+  only-master: &only-master
+    filters:
+      branches:
+        only: master
 
 ## Circle CI configuration, see https://circleci.com/docs/2.0/configuration-reference/
 version: 2.1
@@ -64,35 +72,19 @@ jobs:
           name: Send unit test coverage to Codecov
           command: npm run codecov
 
-  # deploy:
-  #   <<: *node-container-config
-  #   steps:
-  #     - checkout
-  #     - *load-dependency-cache
-  #     - *configure-aws-access
-  #     - run:
-  #         name: Deploy app
-  #         command: |
-  #           [[ ! -z "$STAGE" ]] || STAGE=${CIRCLE_BRANCH%%/*}
-  #           echo Deploying app for stage $STAGE
-  #           npm run deploy -- --stage $STAGE
-  #     # Save stack outputs for use during testing
-  #     - persist_to_workspace:
-  #         root: .
-  #         paths:
-  #           - .serverless
-
-  # e2e-test:
-  #   <<: *node-container-config
-  #   steps:
-  #     - checkout
-  #     - *load-dependency-cache
-  #     # load .serverless directory for stack outputs
-  #     - attach_workspace:
-  #         at: .
-  #     - run:
-  #         name: Run e2e tests
-  #         command: npm run e2e-tests
+  generate-docs:
+    <<: *node-container-config
+    steps:
+      - checkout
+      - *load-dependency-cache
+      - run:
+          name: Generate documentation
+          command: npm run generate-docs
+      # Save generated docs for publishing
+      - persist_to_workspace:
+          root: .
+          paths:
+            - docs
 
   deploy:
     description: Deploy the app to the specified stage
@@ -100,8 +92,8 @@ jobs:
     parameters:
       stage:
         description: Stage to deploy to
-        default: ''
         type: string
+        default: ''
     steps:
       - checkout
       - *load-dependency-cache
@@ -125,33 +117,24 @@ jobs:
     parameters:
       stage:
         description: Stage to test
-        default: ''
         type: string
+        default: ''
     steps:
       - checkout
       - *load-dependency-cache
       - attach_workspace:
           at: .
-      # - run:
-      #     name: Test deployed stack
-      #     command: npm run e2e-test
-
-  generate-docs:
-    <<: *node-container-config
-    steps:
-      - checkout
-      - *load-dependency-cache
       - run:
-          name: Generate documentation
-          command: npm run generate-docs
-      # Save generated docs for publishing
-      - persist_to_workspace:
-          root: .
-          paths:
-            - docs
+          name: Test deployed stack
+          command: npm run e2e-test
 
   publish-docs:
     <<: *python-container-config
+    parameters:
+      stage:
+        description: Stage to publish docs to
+        type: string
+        default: ''
     steps:
       - checkout
       - *load-dependency-cache
@@ -168,6 +151,7 @@ jobs:
       - run:
           name: Publish api documentation
           command: |
+            STAGE=<< parameters.stage >>
             [[ ! -z "$STAGE" ]] || STAGE=${CIRCLE_BRANCH%%/*}
             echo Publishing api documentation for stage $STAGE
             # TODO figure out how to simplify getting the bucket name from outputs.yml
@@ -178,38 +162,85 @@ jobs:
 workflows:
   version: 2
 
-  test-and-deploy:
+  build-test-and-deploy:
     jobs:
+      # Always install, unit test, and generate API documentation
       - install
+      - generate-docs
       - unit-test:
           requires: [install]
+
+      # On non-master branches deploy and test branch-based ephemeral stages
       - deploy:
           name: deploy-branch
+          <<: *only-branches
           context: pariveda-serverless-aws
           requires: [unit-test]
       - test-deployed-app:
           name: test-branch
+          <<: *only-branches
           requires: [deploy-branch]
-      - deploy:
-          name: deploy-branch2
+      - publish-docs:
+          name: publish-docs-branch
+          <<: *only-branches
           context: pariveda-serverless-aws
-          stage: branch2
-          requires: [test-branch]
+          requires: [deploy-branch]
+
+      # On master branches deploy and test to long-lived branches up to production
+      - deploy:
+          name: deploy-dev
+          stage: dev
+          <<: *only-master
+          context: pariveda-serverless-aws
+          requires: [unit-test]
+      - test-deployed-app:
+          name: test-dev
+          stage: dev
+          <<: *only-master
+          context: pariveda-serverless-aws
+          requires: [deploy-dev]
+      - publish-docs:
+          name: publish-docs-dev
+          stage: dev
+          <<: *only-master
+          context: pariveda-serverless-aws
+          requires: [deploy-dev]
+
+      - deploy:
+          name: deploy-staging
+          stage: staging
+          <<: *only-master
+          context: pariveda-serverless-aws
+          requires: [test-dev]
       - test-deployed-app:
           name: test-staging
-          stage: branch2
-          requires: [deploy-branch2]
-      # - deploy:
-      #     context: pariveda-serverless-aws
-      #     requires:
-      #       - unit-test
-      # - e2e-test:
-      #     requires:
-      #       - deploy
-      - generate-docs:
-          requires:
-            - deploy-branch
+          stage: staging
+          <<: *only-master
+          requires: [deploy-staging]
       - publish-docs:
+          name: publish-docs-staging
+          stage: staging
+          <<: *only-master
           context: pariveda-serverless-aws
-          requires:
-            - generate-docs
+          requires: [deploy-staging]
+
+      - prod-approval:
+          type: approval
+          requires: [test-staging]
+      - deploy:
+          name: deploy-prod
+          stage: prod
+          <<: *only-master
+          context: pariveda-serverless-aws
+          requires: [prod-approval]
+      - test-deployed-app:
+          name: test-prod
+          stage: prod
+          <<: *only-master
+          requires: [deploy-prod]
+      - publish-docs:
+          name: publish-docs-prod
+          stage: prod
+          <<: *only-master
+          context: pariveda-serverless-aws
+          requires: [deploy-prod]

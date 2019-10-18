@@ -10,7 +10,7 @@
 # Architecture
 
 <p align="center">
-  <img max-width="20%" src="docs/architecture/drawio-architecture.png"/>
+  <img max-width="20%" src="docs/architecture/cloudcraft-architecture-diagram.png"/>
 </p>
 <!-- badge icons -->
 

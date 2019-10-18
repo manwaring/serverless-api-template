@@ -2,7 +2,6 @@ service:
   name: serverless-api-typescript
 
 plugins:
-  # - serverless-plugin-iopipe
   - serverless-webpack
   - serverless-cloudformation-resource-counter
   - serverless-plugin-iam-checker
@@ -16,52 +15,94 @@ provider:
   environment:
     LAMBDA_WRAPPER_LOG: true
     IOPIPE_TOKEN: ${env:IOPIPE_TOKEN}
-    HELLO_TABLE: { Ref: HelloTable }
+    MESSAGES_TABLE: !Ref MessagesTable
   iamRoleStatements:
+    - Effect: Allow
+      Action: cloudfront:CreateInvalidation
+      Resource: '*'
+    - Effect: Allow
+      Action: sns:Publish
+      Resource: !Ref InvalidateCacheTopic
     - Effect: Allow
       Action:
         - dynamodb:Scan
         - dynamodb:PutItem
         - dynamodb:DeleteItem
-      Resource: { Fn::GetAtt: [HelloTable, Arn] }
+      Resource: !GetAtt [MessagesTable, Arn]
 
 custom:
-  # configuration for serverles-prune-plugin
+  invalidateCacheTopic: ${self:service.name}-invalidate-cache-${opt:stage, self:provider.stage}
+  # Serverless plugin configurations
+  # https://github.com/manwaring/serverless-plugin-iam-checker
+  iamChecker:
+    resources:
+      allowWildcardOnly: true # Unfortunately need to allow wildcard only because CloudFront doesn't support resource ARNs in IAM
+  # https://github.com/claygregory/serverless-prune-plugin
   prune:
     automatic: true
     number: 3
-  # configuration for serverless-cloudformation-resource-counter
+  # https://github.com/drexler/serverless-cloudformation-resource-counter
   warningThreshold: 100
 
 functions:
-  get-all-hellos:
-    handler: app/hellos/get-all-hellos.handler
+  get-all-messages:
+    handler: app/messages/get-all.handler
     events:
       - http:
           method: get
-          path: hellos
+          path: messages
 
-  add-hello:
-    handler: app/hellos/add-hello.handler
+  add-message:
+    handler: app/messages/add.handler
     events:
       - http:
           method: post
-          path: hellos
+          path: messages
 
-  delete-hello:
-    handler: app/hellos/delete-hello.handler
+  delete-message:
+    handler: app/messages/delete.handler
     events:
       - http:
           method: delete
-          path: hellos/{id}
+          path: messages/{id}
           request:
             parameters:
               paths:
                 id: true
 
+  update-message:
+    handler: app/messages/update.handler
+    events:
+      - http:
+          method: put
+          path: messages/{id}
+          request:
+            parameters:
+              paths:
+                id: true
+
+  invalidateCache:
+    handler: app/cache/invalidate.handler
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt MessagesTable.StreamArn
+      - sns:
+          arn: !Ref InvalidateCacheTopic
+          topicName: ${self:custom.invalidateCacheTopic}
+    environment:
+      API_CLOUDFRONT: !Ref APICloudFrontDistribution
+
 resources:
+  Description: Serverless API starter using Serverless Framework and TypeScript for the ${opt:stage, self:provider.stage} stage
+
   Resources:
-    HelloTable:
+    InvalidateCacheTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:custom.invalidateCacheTopic}
+
+    MessagesTable:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
@@ -71,6 +112,46 @@ resources:
           - AttributeName: id
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+
+    APICloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Comment: Powering the Pariveda Serverless Starter message service for the ${opt:stage, self:provider.stage} stage
+          CustomErrorResponses:
+            - ErrorCachingMinTTL: 0
+              ErrorCode: 503
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - PATCH
+              - POST
+              - DELETE
+            TargetOriginId: APIGateway
+            ViewerProtocolPolicy: 'redirect-to-https'
+            DefaultTTL: 2592000
+            ForwardedValues:
+              QueryString: true
+          Enabled: true
+          Origins:
+            - Id: APIGateway
+              DomainName:
+                Fn::Join:
+                  - '.'
+                  - - !Ref ApiGatewayRestApi
+                    - execute-api
+                    - !Ref AWS::Region
+                    - amazonaws.com
+              OriginPath: /${opt:stage, self:provider.stage}
+              CustomOriginConfig:
+                HTTPPort: 80
+                HTTPSPort: 443
+                OriginProtocolPolicy: https-only
 
     ApiDocumentationBucket:
       Type: AWS::S3::Bucket
@@ -104,5 +185,13 @@ resources:
       Description: Bucket for hosting Api documentation
 
     ApiDocumentationUrl:
-      Value: { Fn::GetAtt: [ApiDocumentationBucket, WebsiteURL] }
+      Value: !GetAtt [ApiDocumentationBucket, WebsiteURL]
       Description: URL for Api documentation website
+
+    CloudFrontEndpoint:
+      Description: URL of the CloudFront endpoint
+      Value:
+        Fn::Join:
+          - ''
+          - - https://
+            - !GetAtt [APICloudFrontDistribution, DomainName]

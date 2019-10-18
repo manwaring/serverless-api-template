@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk';
 import { Chance } from 'chance';
-import { Hello } from './hello';
+import { Message } from './message';
 jest.mock('aws-sdk');
 
 const chance = new Chance();
@@ -25,35 +25,35 @@ const del = jest.fn().mockReturnValue({
 // @ts-ignore
 DynamoDB.DocumentClient.mockImplementation(() => ({ put, scan, delete: del }));
 
-describe('Hello table', () => {
-  const TableName = 'HellosTable';
+describe('Message table', () => {
+  const TableName = 'MessagesTable';
   const ORIGINAL_ENVS = process.env;
-  const TABLE_PROPS = { HELLO_TABLE: TableName };
+  const TABLE_PROPS = { MESSAGES_TABLE: TableName };
   process.env = { ...ORIGINAL_ENVS, ...TABLE_PROPS };
-  const { HelloTable } = require('./hello-table');
-  const helloTable = new HelloTable(new DynamoDB.DocumentClient());
+  const { MessagesTable } = require('./table');
+  const messagesTable = new MessagesTable(new DynamoDB.DocumentClient());
 
   beforeEach(() => {
     jest.resetModules();
     console.log = jest.fn();
   });
 
-  it('Adds hellos', async () => {
-    const message = chance.paragraph();
-    const hello = new Hello({ message }, true);
-    await helloTable.add(hello);
-    expect(put).toHaveBeenCalledWith({ TableName, Item: hello });
+  it('Adds message', async () => {
+    const text = chance.paragraph();
+    const message = new Message({ text }, true);
+    await messagesTable.add(message);
+    expect(put).toHaveBeenCalledWith({ TableName, Item: message });
   });
 
-  it('Gets all hellos', async () => {
-    const response = await helloTable.getAll();
+  it('Gets all messages', async () => {
+    const response = await messagesTable.getAll();
     expect(response).toEqual([mockItem]);
     expect(scan).toHaveBeenCalledWith({ TableName });
   });
 
-  it('Deletes hello', async () => {
+  it('Deletes message', async () => {
     const id = chance.guid();
-    await helloTable.del(id);
+    await messagesTable.del(id);
     expect(del).toHaveBeenCalledWith({ TableName, Key: { id } });
   });
 });

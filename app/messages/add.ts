@@ -1,24 +1,24 @@
 import 'source-map-support/register';
 import { api } from '@manwaring/lambda-wrapper';
-import { Hello } from './hello';
-import { helloTable } from './hello-table';
+import { Message } from './message';
+import { messagesTable } from './table';
 
 /**
  * @swagger
- * /hellos:
+ * /messages:
  *  post:
- *    description: Add a new hello message
+ *    description: Add a new message
  *    produces:
  *      - application/json
  *    responses:
  *      200:
- *        description: Hello messages
+ *        description: Messages
  */
 export const handler = api(async ({ body, testRequest, success, error }) => {
   try {
-    const hello = new Hello(body, testRequest);
-    await helloTable.add(hello);
-    success(hello);
+    const message = new Message(body, testRequest);
+    await messagesTable.add(message);
+    success(message);
   } catch (err) {
     error(err);
   }
