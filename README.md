@@ -96,7 +96,7 @@ Note that calling the API Gateway endpoint directly bypasses all caching and so 
 
 The first call after CDN invalidation will be a cache miss, every call thereafter will be a cache hit. Because the cache doesn't timeout arbitrarily (it's manually flushed when the data updates), this setup guarantees the highest possible cache hit rate and highest possible caching performance.
 
-![architecture overview](docs/diagrams/cloudcraft-architecture.png)
+![architecture overview](diagrams/cloudcraft-architecture.png)
 
 The api documentation is generated with swagger and hosted on a [repo-specific GitHub page](https://pariveda-accelerators.github.io/serverless-api-typescript/).
 
