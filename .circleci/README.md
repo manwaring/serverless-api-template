@@ -2,7 +2,7 @@
 
 This project is setup to use [Trunk based development](https://trunkbaseddevelopment.com/), where changes to master are automatically pushed to long-lived environments/stages and changes in each feature branch are automatically pushed to an ephemeral environment dedicated to that feature branch.
 
-![branches and deployments](https://user-images.githubusercontent.com/2955468/66448809-c9fa7c00-ea20-11e9-8797-de3747d6edc0.png)
+![branches-ci-cd](../docs/diagrams/lucidchart-branches-and-ci-cd.png)
 
 ## Stage setup
 
