@@ -4,14 +4,20 @@ import { messagesTable } from './table';
 
 /**
  * @swagger
- * /messages:
- *    delete:
- *      description: Delete a message
- *      produces:
- *        - application/json
- *      responses:
- *        200:
- *          description: Message
+ * /messages/{id}:
+ *  delete:
+ *    summary: Delete message
+ *    description: Deletes the message with specified ID
+ *    parameters:
+ *      - name: id
+ *        in: path
+ *        required: true
+ *        description: ID of the message to delete
+ *        schema:
+ *          type: string
+ *    responses:
+ *      200:
+ *        description: Success response
  */
 export const handler = api(async ({ path, success, error }) => {
   try {

@@ -6,12 +6,17 @@ import { messagesTable } from './table';
  * @swagger
  * /messages:
  *  get:
- *    description: Get all messages
- *    produces:
- *      - application/json
+ *    summary: Get all messages
+ *    description: Retreives all messages (doesn't currently handle database pagination and so may truncate large result sets)
  *    responses:
  *      200:
- *        description: Messages
+ *        description: Array of messages
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                $ref: '#/definitions/MessageResponse'
  */
 export const handler = api(async ({ success, error }) => {
   try {

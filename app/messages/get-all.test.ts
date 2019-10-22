@@ -1,4 +1,5 @@
 import createEvent from '@serverless/event-mocks';
+import { context } from 'serverless-plugin-test-helper';
 import { Chance } from 'chance';
 
 const chance = new Chance();
@@ -8,20 +9,6 @@ describe('Get all messages', () => {
   const event = createEvent('aws:apiGateway', {
     headers: { 'content-type': 'application/json', 'Test-Request': 'true' }
   });
-  const context = {
-    callbackWaitsForEmptyEventLoop: false,
-    functionName: 'function-name',
-    functionVersion: '$LATEST',
-    invokedFunctionArn: 'arn:',
-    memoryLimitInMB: 128,
-    awsRequestId: 'request',
-    logGroupName: 'group',
-    logStreamName: 'stream',
-    getRemainingTimeInMillis: () => 2,
-    done: () => {},
-    fail: () => {},
-    succeed: () => {}
-  };
   const callback = jest.fn((err, result) => (err ? new Error(err) : result));
 
   beforeEach(() => {

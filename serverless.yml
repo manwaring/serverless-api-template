@@ -15,6 +15,7 @@ provider:
   environment:
     LAMBDA_WRAPPER_LOG: true
     MESSAGES_TABLE: !Ref MessagesTable
+    INVALIDATE_CACHE_TOPIC: !Ref InvalidateCacheTopic
   iamRoleStatements:
     - Effect: Allow
       Action: cloudfront:CreateInvalidation
@@ -44,6 +45,9 @@ custom:
   warningThreshold: 100
 
 functions:
+  load-messages-snapshot:
+    handler: app/messages/load-snapshot.handler
+
   get-all-messages:
     handler: app/messages/get-all.handler
     events:
@@ -69,16 +73,16 @@ functions:
               paths:
                 id: true
 
-  # update-message:
-  #   handler: app/messages/update.handler
-  #   events:
-  #     - http:
-  #         method: put
-  #         path: messages/{id}
-  #         request:
-  #           parameters:
-  #             paths:
-  #               id: true
+  update-message:
+    handler: app/messages/update.handler
+    events:
+      - http:
+          method: put
+          path: messages/{id}
+          request:
+            parameters:
+              paths:
+                id: true
 
   invalidateCache:
     handler: app/cache/invalidate.handler

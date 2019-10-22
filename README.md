@@ -31,6 +31,14 @@ _Install dependencies_
 npm i
 ```
 
+_See generated swagger docs while you work_
+
+```bash
+npm run watch-docs
+```
+
+This will start a local http server at http://localhost:8080 that renders the most up to date version of the app swagger documentation (file changes in `app/` trigger doc regeneration).
+
 _Deploy application to AWS_
 
 ```bash

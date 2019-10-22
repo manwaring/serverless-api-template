@@ -7,6 +7,8 @@
     "test": "jest --coverage",
     "watch-tests": "jest --watch",
     "e2e-test": "jest -c=jest.config.e2e.js",
+    "load-data": "sls invoke -f load-messages-snapshot",
+    "watch-docs": "live-server docs & watch 'npm run generate-docs' app",
     "generate-docs": "swagger-jsdoc -d docs/swagger-spec.yml -o docs/swagger.json",
     "codecov": "codecov -f coverage/*.json"
   },
@@ -32,6 +34,7 @@
     "codecov": "^3.6.1",
     "husky": "^3.0.9",
     "jest": "^24.9.0",
+    "live-server": "^1.2.1",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
     "rimraf": "^3.0.0",
@@ -45,6 +48,7 @@
     "ts-jest": "^24.1.0",
     "ts-loader": "^6.2.0",
     "typescript": "^3.6.4",
+    "watch": "^1.0.2",
     "webpack": "^4.41.2"
   },
   "jest": {

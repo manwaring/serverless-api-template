@@ -18,12 +18,16 @@ const scan = jest.fn().mockReturnValue({
 const put = jest.fn().mockReturnValue({
   promise: jest.fn().mockResolvedValue({})
 });
-
+const get = jest.fn().mockReturnValue({
+  promise: jest.fn().mockResolvedValue({
+    Item: mockItem
+  })
+});
 const del = jest.fn().mockReturnValue({
   promise: jest.fn().mockResolvedValue({})
 });
 // @ts-ignore
-DynamoDB.DocumentClient.mockImplementation(() => ({ put, scan, delete: del }));
+DynamoDB.DocumentClient.mockImplementation(() => ({ put, scan, get, delete: del }));
 
 describe('Message table', () => {
   const TableName = 'MessagesTable';
@@ -49,6 +53,18 @@ describe('Message table', () => {
     const response = await messagesTable.getAll();
     expect(response).toEqual([mockItem]);
     expect(scan).toHaveBeenCalledWith({ TableName });
+  });
+
+  it('Gets message by id', async () => {
+    const response = await messagesTable.get(mockItem.id);
+    expect(response).toEqual(mockItem);
+    expect(get).toHaveBeenCalledWith({ TableName, Key: { id: mockItem.id } });
+  });
+
+  it('Updates a message', async () => {
+    const response = await messagesTable.update(mockItem);
+    expect(response).toEqual(mockItem);
+    expect(put).toHaveBeenCalledWith({ TableName, Item: mockItem });
   });
 
   it('Deletes message', async () => {
