@@ -1,0 +1,73 @@
+{
+  "info": {
+    "title": "Serverless API TypeScript",
+    "version": "0.0.1",
+    "description": "API for the serverless starter",
+    "x-logo": {
+      "url": "https://user-images.githubusercontent.com/2955468/62672521-077f5200-b969-11e9-8247-a7a34540b41d.png",
+      "backgroundColor": "#FAFAFA",
+      "altText": "Logo"
+    }
+  },
+  "swagger": "2.0",
+  "paths": {
+    "/messages": {
+      "post": {
+        "description": "Add a new message",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Messages"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a message",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Message"
+          }
+        }
+      },
+      "get": {
+        "description": "Get all messages",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Messages"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Message": {
+      "type": "object",
+      "required": [
+        null
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "test": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "responses": {},
+  "parameters": {},
+  "securityDefinitions": {},
+  "tags": []
+}

@@ -14,6 +14,3 @@ iopipe_handlers
 # test output and coverage
 .nyc_output
 coverage
-
-# generated swagger spec file
-swagger.json
