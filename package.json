@@ -6,7 +6,7 @@
     "deploy": "sls deploy",
     "test": "jest --coverage",
     "watch-tests": "jest --watch",
-    "e2e-tests": "jest -c=jest.config.e2e.js",
+    "e2e-test": "jest -c=jest.config.e2e.js",
     "generate-docs": "swagger-jsdoc -d docs/swagger-spec.yml -o docs/swagger.json",
     "codecov": "codecov -f coverage/*.json"
   },
