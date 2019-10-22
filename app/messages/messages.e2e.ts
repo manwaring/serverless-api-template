@@ -9,9 +9,9 @@ describe('Messages CRUD', () => {
 
   it('Saves message', async () => {
     const text = chance.paragraph();
-    message = await post(CDN_URL, { body: { message }, json: true });
+    message = await post(CDN_URL, { body: { text }, json: true });
     expect(message).toHaveProperty('id');
-    expect(message).toHaveProperty('message');
+    expect(message).toHaveProperty('text');
     expect(message.text).toBe(text);
   });
 
@@ -21,7 +21,7 @@ describe('Messages CRUD', () => {
     expect(messages).toHaveLength(1);
     const messageResponse = messages[0];
     expect(messageResponse).toHaveProperty('id');
-    expect(messageResponse).toHaveProperty('message');
+    expect(messageResponse).toHaveProperty('text');
     expect(messageResponse).toEqual(message);
   });
 

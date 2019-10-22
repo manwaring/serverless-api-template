@@ -2,6 +2,8 @@
 
 This project is setup to use [Trunk based development](https://trunkbaseddevelopment.com/), where changes to master are automatically pushed to long-lived environments/stages and changes in each feature branch are automatically pushed to an ephemeral environment dedicated to that feature branch.
 
+Consider using a tool like [Odin](https://github.com/manwaring/odin) to automatically remove stale branches.
+
 ![branches-ci-cd](../diagrams/lucidchart-branches-and-ci-cd.png)
 
 ## Stage setup

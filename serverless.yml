@@ -14,7 +14,6 @@ provider:
   runtime: nodejs10.x
   environment:
     LAMBDA_WRAPPER_LOG: true
-    IOPIPE_TOKEN: ${env:IOPIPE_TOKEN}
     MESSAGES_TABLE: !Ref MessagesTable
   iamRoleStatements:
     - Effect: Allow
