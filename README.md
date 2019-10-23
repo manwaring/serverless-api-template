@@ -1,6 +1,6 @@
 <p align="center">
-  <img height="150" src="https://user-images.githubusercontent.com/2955468/63987740-58392500-caa7-11e9-8c2e-06fc5fe9b91d.png"/>
-  <img height="150" src="https://user-images.githubusercontent.com/2955468/62672521-077f5200-b969-11e9-8247-a7a34540b41d.png"/>
+  <img height="140" src="https://user-images.githubusercontent.com/2955468/63987740-58392500-caa7-11e9-8c2e-06fc5fe9b91d.png"/>
+  <img height="140" src="https://user-images.githubusercontent.com/2955468/62672521-077f5200-b969-11e9-8247-a7a34540b41d.png"/>
 </p>
 
 [![build]][build-url] [![coverage]][coverage-url] [![dependabot]][dependabot-url] [![dependencies]][dependencies-url] [![dev-dependencies]][dev-dependencies-url] [![license]][license-url]
