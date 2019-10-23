@@ -112,6 +112,7 @@ The api documentation is generated with swagger and hosted on a [repo-specific G
 
 - [Serverless Framework](https://serverless.com/framework/docs/) for managing infrastructure as code (including helpful abstractions on top of [CloudFormation](https://docs.aws.amazon.com/cloudformation/index.html)) and as a CLI for scripted deployments
 - [TypeScript](https://www.typescriptlang.org/index.html) for advanced JS features and typings
+- [Lumigo](https://lumigo.io/) for serverless-specific monitoring and logging
 
 ### Key limitations
 
@@ -126,7 +127,7 @@ TODO
 
 ## TODOs
 
-- Add a custom Lambda Authorizer function to validate that non-GET calls are from authenticated users
+- Add a [custom Lambda Authorizer](https://serverless.com/framework/docs/providers/aws/events/apigateway/#http-endpoints-with-custom-authorizers) function to validate that non-GET calls are from authenticated users
 - Key concepts
 
 <!-- badge icons -->
