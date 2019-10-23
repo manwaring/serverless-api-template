@@ -14,3 +14,6 @@ iopipe_handlers
 # test output and coverage
 .nyc_output
 coverage
+
+# lumigo-wrapped handler files
+_lumigo

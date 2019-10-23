@@ -9,19 +9,20 @@ describe('Messages CRUD', () => {
 
   it('Saves message', async () => {
     const text = chance.paragraph();
-    message = await post(CDN_URL, { body: { text }, json: true });
+    const author = chance.name();
+    message = await post(CDN_URL, { body: { text, author }, json: true });
     expect(message).toHaveProperty('id');
     expect(message).toHaveProperty('text');
-    expect(message.text).toBe(text);
+    expect(message).toHaveProperty('author');
+    expect(message.text).toEqual(text);
+    expect(message.author).toEqual(author);
   });
 
   it('Gets messages', async () => {
     const messages = await get(CDN_URL, { json: true });
     expect(messages).toBeInstanceOf(Array);
-    expect(messages).toHaveLength(1);
-    const messageResponse = messages[0];
-    expect(messageResponse).toHaveProperty('id');
-    expect(messageResponse).toHaveProperty('text');
+    expect(messages.length).toBeGreaterThan(0);
+    const messageResponse = messages.find(mes => mes.id === message.id);
     expect(messageResponse).toEqual(message);
   });
 

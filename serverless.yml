@@ -7,6 +7,7 @@ plugins:
   - serverless-plugin-iam-checker
   - serverless-plugin-test-helper
   - serverless-prune-plugin
+  - serverless-lumigo
 
 provider:
   name: aws
@@ -37,6 +38,10 @@ custom:
   iamChecker:
     resources:
       allowWildcardOnly: true # Unfortunately need to allow wildcard only because CloudFront doesn't support resource ARNs in IAM
+  # https://github.com/lumigo-io/serverless-lumigo-plugin
+  lumigo:
+    token: ${env:LUMIGO_TOKEN}
+    nodePackageManager: npm
   # https://github.com/claygregory/serverless-prune-plugin
   prune:
     automatic: true
