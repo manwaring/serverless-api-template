@@ -10,6 +10,7 @@
 Demo application showing how to build a highly-performant backend service on AWS.
 
 1. [AWS setup & configuration](#aws-setup-&-configuration)
+1. [Lumigo setup & configuration](#lumigo-setup-&-configuration)
 1. [Application setup & deployment](#application-setup-&-deployment)
 1. [Deployed endpoints](#deployed-endpoints)
 1. [Architecture](#architecture)
@@ -23,23 +24,49 @@ Demo application showing how to build a highly-performant backend service on AWS
 
 To deploy the application to AWS you'll need an account with access credentials configured locally - see the [Serverless Framework guide here](https://serverless.com/framework/docs/providers/aws/guide/credentials/). Setting up the [full AWS CLI](https://aws.amazon.com/cli/) and [configuring access via profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) is recommended, as it will allow you to access AWS resources directly when needed.
 
+## Lumigo setup & configuration
+
+This application is currently setup with [Lumigo](https://lumigo.io/) as a serverless monitoring and logging solution. To package and deploy the application you'll either need to setup an account and provide a Lumigo access token as environment variable or comment out a single line of `serverless.yml` config to disable the plugin.
+
+Instructions for [setting up your Lumigo account](https://docs.lumigo.io/docs) and [configuring the Lumigo serverless plugin](https://github.com/lumigo-io/serverless-lumigo-plugin).
+
+Or just comment out the Lumigo plugin in `serverless.yml`, and optionally comment out the Lumigo-specific configurations:
+
+```yml
+plugins:
+  - serverless-webpack
+  - serverless-cloudformation-resource-counter
+  - serverless-plugin-iam-checker
+  - serverless-plugin-test-helper
+  - serverless-prune-plugin
+  # - serverless-lumigo
+
+# (commenting out the custom config is optional)
+custom:
+  ...
+  # https://github.com/lumigo-io/serverless-lumigo-plugin
+  # lumigo:
+    # token: ${env:LUMIGO_TOKEN}
+    # nodePackageManager: npm
+```
+
 ## Application setup & deployment
 
-_Install dependencies_
+**Install dependencies**
 
 ```bash
 npm i
 ```
 
-_See generated swagger docs while you work_
+**See generated swagger docs while you work**
 
 ```bash
 npm run watch-docs
 ```
 
-This will start a local http server at http://localhost:8080 that renders the most up to date version of the app swagger documentation (file changes in `app/` trigger doc regeneration).
+_This will start a local http server at http://localhost:8080 that renders the most up to date version of the app swagger documentation (file changes in `app/` trigger doc regeneration)._
 
-_Deploy application to AWS_
+**Deploy application to AWS**
 
 ```bash
 # Using your default AWS profile
@@ -49,9 +76,9 @@ npm run deploy
 npm run deploy -- --aws-profile [YOUR PROFILE]
 ```
 
-Note that deploying the application for the first time to a given stage can take up to 1 hour. This is because the application makes use of CloudFront for CDN-level API caching, and when CloudFront creates a new distribution it takes a long time. **This means that when CircleCI is deploying the application to a stage for the first time it will fail due to a CircleCI timeout.** This is most common on the first deploy of a new feature branch. While CircleCI errors out the deployment continues via CloudFormation, and once the first deploy has completed subsequent deploys will complete much faster (assuming no changes to the CloudFront configurations).
+_Note that deploying the application for the first time to a given stage can take up to 1 hour. This is because the application makes use of CloudFront for CDN-level API caching, and when CloudFront creates a new distribution it takes a long time. **This means that when CircleCI is deploying the application to a stage for the first time it will fail due to a CircleCI timeout.** This is most common on the first deploy of a new feature branch. While CircleCI errors out the deployment continues via CloudFormation, and once the first deploy has completed subsequent deploys will complete much faster (assuming no changes to the CloudFront configurations)._
 
-_Load snapshot data from [snapshot-data/messages-10-18-2019.json](snapshot-data/messages-10-18-2019.json) into the deployed DynamoDB table_
+**Load snapshot data from [snapshot-data/messages-10-18-2019.json](snapshot-data/messages-10-18-2019.json) into the deployed DynamoDB table**
 
 ```bash
 # Using your default AWS profile
@@ -64,21 +91,21 @@ npm run load-data -- --aws-profile [YOUR PROFILE]
 npm run load-data -- --aws-profile [YOUR PROFILE] --stage [TARGETED STAGE]
 ```
 
-_Run unit tests_
+**Run unit tests**
 
 ```bash
 npm test
 ```
 
-_Run e2e tests_
+**Run e2e tests**
 
 ```bash
 npm run e2e-test
 ```
 
-Note that running an e2e test requires you to first deploy the service to AWS.
+_Note that running an e2e test requires you to first deploy the service to AWS._
 
-_Remove application from AWS_
+**Remove application from AWS**
 
 ```bash
 # Using your default AWS profile
@@ -88,7 +115,7 @@ npm run remove
 npm run remove -- --aws-profile [YOUR PROFILE]
 ```
 
-Note that all of the serverless commands are run through package.json scripts - this is so that people are working from a pinned version of the serverless framework as included in the package, as opposed to everyone using a global version that could span versions across multiple developer environments, potentially with slightly different side effects or other unintended differences that introduces unnecessary variance.
+_Note that all of the serverless commands are run through package.json scripts - this is so that people are working from a pinned version of the serverless framework as included in the package, as opposed to everyone using a global version that could span versions across multiple developer environments, potentially with slightly different side effects or other unintended differences that introduces unnecessary variance._
 
 ## Deployed endpoints
 
