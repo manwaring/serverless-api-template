@@ -9,9 +9,9 @@
 
 Demo application showing how to build a highly-performant backend service on AWS.
 
-1. [AWS setup & configuration](#aws-setup-&-configuration)
-1. [Lumigo setup & configuration](#lumigo-setup-&-configuration)
-1. [Application setup & deployment](#application-setup-&-deployment)
+1. [AWS setup & configuration](#aws-setup--configuration)
+1. [Lumigo setup & configuration](#lumigo-setup--configuration)
+1. [Application setup & deployment](#application-setup--deployment)
 1. [Deployed endpoints](#deployed-endpoints)
 1. [Architecture](#architecture)
 1. [Technologies & tools](#technologies-&-tools)
