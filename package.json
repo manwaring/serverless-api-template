@@ -4,6 +4,7 @@
   "description": "Serverless API example using Typescript",
   "scripts": {
     "deploy": "sls deploy",
+    "remove": "sls remove",
     "test": "jest --coverage",
     "watch-tests": "jest --watch",
     "e2e-test": "jest -c=jest.config.e2e.js",
