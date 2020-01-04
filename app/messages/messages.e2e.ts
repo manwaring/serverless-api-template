@@ -1,24 +1,27 @@
 import { post, get, del } from 'request-promise-native';
-import { Chance } from 'chance';
 import { getOutput } from 'serverless-plugin-test-helper';
+import { validCreateMessage } from './sample-data/dynamic-messages';
 
 describe('Messages CRUD', () => {
   const CDN_URL = `${getOutput('CloudFrontEndpoint')}/messages`;
-  const chance = new Chance();
   let message;
 
   it('Saves message', async () => {
-    const text = chance.paragraph();
-    const author = chance.name();
-    message = await post(CDN_URL, { body: { text, author }, json: true });
-    expect(message).toHaveProperty('id');
-    expect(message).toHaveProperty('text');
-    expect(message).toHaveProperty('author');
-    expect(message.text).toEqual(text);
-    expect(message.author).toEqual(author);
+    const response = await post(CDN_URL, { body: validCreateMessage, json: true });
+    assertMessagePropertiesMatch(response, validCreateMessage);
+    message = response;
+  });
+
+  it('Gets message', async () => {
+    // Allow some time for the cache to clear
+    await sleep(4000);
+    const response = await get(`${CDN_URL}/${message.id}`, { json: true });
+    assertMessagePropertiesMatch(response, validCreateMessage);
   });
 
   it('Gets messages', async () => {
+    // Allow some time for the cache to clear
+    await sleep(4000);
     const messages = await get(CDN_URL, { json: true });
     expect(messages).toBeInstanceOf(Array);
     expect(messages.length).toBeGreaterThan(0);
@@ -27,12 +30,26 @@ describe('Messages CRUD', () => {
   });
 
   it('Deletes message', async () => {
-    const response = await del(`${CDN_URL}/${message.id}`);
+    await del(`${CDN_URL}/${message.id}`);
   });
 
   it('Gets messages after delete', async () => {
+    // Allow some time for the cache to clear
+    await sleep(4000);
     const messages = await get(CDN_URL, { json: true });
     expect(messages).toBeInstanceOf(Array);
     expect(messages).not.toContain(message);
   });
+
+  function assertMessagePropertiesMatch(actual, expected) {
+    expect(actual).toHaveProperty('id');
+    expect(actual.text).toEqual(expected.text);
+    expect(actual.author).toEqual(expected.author);
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => {
+      setTimeout(resolve, ms);
+    });
+  }
 });

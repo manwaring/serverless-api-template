@@ -1,20 +1,11 @@
 import { v4 } from 'uuid';
+import { NonFunctionKeys } from 'utility-types';
+import { IsString } from 'class-validator';
 
 /**
- * @swagger
- *    definitions:
- *      MessageResponse:
- *        type: object
- *        properties:
- *          id:
- *            type: string
- *          text:
- *            type: string
- *          author:
- *            type: string
- *          test:
- *            type: boolean
- *
+ *  @swagger
+ *  components:
+ *    schemas:
  *      CreateMessageRequest:
  *        type: object
  *        required:
@@ -25,20 +16,64 @@ import { v4 } from 'uuid';
  *            type: string
  *          author:
  *            type: string
- *          test:
- *            type: boolean
  */
 
-export class Message {
-  id: string;
+export class CreateMessageRequest {
+  id?: string;
+
+  @IsString()
+  text: string;
+
+  @IsString()
+  author: string;
+
+  constructor(init: Pick<CreateMessageRequest, NonFunctionKeys<CreateMessageRequest>>) {
+    this.id = v4();
+    this.text = init.text;
+    this.author = init.author;
+  }
+
+  toMessageRecord(): MessageRecord {
+    return new MessageRecord(this);
+  }
+}
+
+export class MessageRecord {
+  id?: string;
   text: string;
   author: string;
-  test: boolean;
+  constructor(init: Pick<MessageRecord, NonFunctionKeys<MessageRecord>>) {
+    this.id = init.id;
+    this.text = init.text;
+    this.author = init.author;
+  }
 
-  constructor(body: any, test: boolean = false) {
-    this.id = v4();
-    this.text = body.text;
-    this.author = body.author;
-    this.test = test;
+  toMessageResponse(): MessageResponse {
+    return new MessageResponse(this);
+  }
+}
+
+/**
+ *  @swagger
+ *  components:
+ *    schemas:
+ *      MessageResponse:
+ *        type: object
+ *        properties:
+ *          id:
+ *            type: string
+ *          text:
+ *            type: string
+ *          author:
+ *            type: string
+ */
+export class MessageResponse {
+  id?: string;
+  text: string;
+  author: string;
+  constructor(init: Pick<MessageResponse, NonFunctionKeys<MessageResponse>>) {
+    this.id = init.id;
+    this.text = init.text;
+    this.author = init.author;
   }
 }

@@ -1,27 +1,19 @@
 import { DynamoDB } from 'aws-sdk';
-import { Chance } from 'chance';
-import { Message } from './message';
+import { CreateMessageRequest } from './message';
+import { validUpdateMessage } from './sample-data/dynamic-messages';
+
+// Mock out the DynamoDB.DocumentClient calls
 jest.mock('aws-sdk');
-
-const chance = new Chance();
-
-const mockItem = {
-  id: chance.guid(),
-  message: chance.paragraph(),
-  test: chance.bool()
-};
+const mockCreateRequest = new CreateMessageRequest(validUpdateMessage);
+const mockRecord = mockCreateRequest.toMessageRecord();
 const scan = jest.fn().mockReturnValue({
-  promise: jest.fn().mockResolvedValue({
-    Items: [mockItem]
-  })
+  promise: jest.fn().mockResolvedValue({ Items: [mockRecord] })
 });
 const put = jest.fn().mockReturnValue({
-  promise: jest.fn().mockResolvedValue({})
+  promise: jest.fn().mockResolvedValue({ mockRecord })
 });
 const get = jest.fn().mockReturnValue({
-  promise: jest.fn().mockResolvedValue({
-    Item: mockItem
-  })
+  promise: jest.fn().mockResolvedValue({ Item: mockRecord })
 });
 const del = jest.fn().mockReturnValue({
   promise: jest.fn().mockResolvedValue({})
@@ -43,32 +35,30 @@ describe('Message table', () => {
   });
 
   it('Adds message', async () => {
-    const text = chance.paragraph();
-    const message = new Message({ text }, true);
-    await messagesTable.add(message);
-    expect(put).toHaveBeenCalledWith({ TableName, Item: message });
+    await messagesTable.add(mockCreateRequest);
+    expect(put).toHaveBeenCalledWith({ TableName, Item: mockRecord });
   });
 
   it('Gets all messages', async () => {
     const response = await messagesTable.getAll();
-    expect(response).toEqual([mockItem]);
+    expect(response).toEqual([mockRecord]);
     expect(scan).toHaveBeenCalledWith({ TableName });
   });
 
   it('Gets message by id', async () => {
-    const response = await messagesTable.get(mockItem.id);
-    expect(response).toEqual(mockItem);
-    expect(get).toHaveBeenCalledWith({ TableName, Key: { id: mockItem.id } });
+    const response = await messagesTable.get(mockRecord.id);
+    expect(response).toEqual(mockRecord);
+    expect(get).toHaveBeenCalledWith({ TableName, Key: { id: mockRecord.id } });
   });
 
   it('Updates a message', async () => {
-    const response = await messagesTable.update(mockItem);
-    expect(response).toEqual(mockItem);
-    expect(put).toHaveBeenCalledWith({ TableName, Item: mockItem });
+    const response = await messagesTable.update(mockCreateRequest);
+    expect(response).toEqual(mockRecord.toMessageResponse());
+    expect(put).toHaveBeenCalledWith({ TableName, Item: mockRecord });
   });
 
   it('Deletes message', async () => {
-    const id = chance.guid();
+    const id = mockCreateRequest.id;
     await messagesTable.del(id);
     expect(del).toHaveBeenCalledWith({ TableName, Key: { id } });
   });

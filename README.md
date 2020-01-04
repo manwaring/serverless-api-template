@@ -26,11 +26,11 @@ To deploy the application to AWS you'll need an account with access credentials 
 
 ## Lumigo setup & configuration
 
-This application is currently setup with [Lumigo](https://lumigo.io/) as a serverless monitoring and logging solution. To package and deploy the application you'll either need to setup an account and provide a Lumigo access token as environment variable or comment out a single line of `serverless.yml` config to disable the plugin.
+This application is currently setup with [Lumigo](https://lumigo.io/) as a serverless monitoring and logging solution. To package and deploy the application you'll either need to setup an account and provide a Lumigo access token as environment variable (or `.env` file - see Application Setup below).
 
 Instructions for [setting up your Lumigo account](https://docs.lumigo.io/docs) and [configuring the Lumigo serverless plugin](https://github.com/lumigo-io/serverless-lumigo-plugin).
 
-Or just comment out the Lumigo plugin in `serverless.yml`, and optionally comment out the Lumigo-specific configurations:
+If you don't want to use Lumigo or want to get started without it just comment out the Lumigo plugin in `serverless.yml`, and optionally comment out the Lumigo-specific configurations:
 
 ```yml
 plugins:
@@ -46,11 +46,25 @@ custom:
   ...
   # https://github.com/lumigo-io/serverless-lumigo-plugin
   # lumigo:
-    # token: ${env:LUMIGO_TOKEN}
-    # nodePackageManager: npm
+  # token: ${env:LUMIGO_TOKEN}
+  # nodePackageManager: npm
 ```
 
 ## Application setup & deployment
+
+**Setup local environment**
+
+If using Lumigo, create a `.env` file with the following:
+
+```
+LUMIGO_TOKEN=<token>
+```
+
+**Install dependencies**
+
+```bash
+npm i
+```
 
 **Install dependencies**
 
@@ -78,7 +92,7 @@ npm run deploy -- --aws-profile [YOUR PROFILE]
 
 _Note that deploying the application for the first time to a given stage can take up to 1 hour. This is because the application makes use of CloudFront for CDN-level API caching, and when CloudFront creates a new distribution it takes a long time. **This means that when CircleCI is deploying the application to a stage for the first time it will fail due to a CircleCI timeout.** This is most common on the first deploy of a new feature branch. While CircleCI errors out the deployment continues via CloudFormation, and once the first deploy has completed subsequent deploys will complete much faster (assuming no changes to the CloudFront configurations)._
 
-**Load snapshot data from [snapshot-data/messages-10-18-2019.json](snapshot-data/messages-10-18-2019.json) into the deployed DynamoDB table**
+**Load snapshot data from [app/messages/sample-data/valid-messages.json](app/messages/sample-data/valid-messages.json) into the deployed DynamoDB table**
 
 ```bash
 # Using your default AWS profile

@@ -17,3 +17,6 @@ coverage
 
 # lumigo-wrapped handler files
 _lumigo
+
+# secrets
+.env

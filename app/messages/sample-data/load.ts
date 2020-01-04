@@ -1,14 +1,14 @@
 import 'source-map-support/register';
 import { wrapper } from '@manwaring/lambda-wrapper';
-import { Message } from './message';
-import { messagesTable } from './table';
+import { CreateMessageRequest } from '../message';
+import { messagesTable } from '../table';
 
-const records = require('../../snapshot-data/messages-10-18-2019.json');
+const records = require('./valid-messages.json');
 
 export const handler = wrapper(async ({ success, error }) => {
   try {
     for (const record of records) {
-      const message = new Message(record);
+      const message = new CreateMessageRequest(record);
       await messagesTable.add(message);
     }
     success(`Successfully loaded ${records.length} messages from snapshot data`);

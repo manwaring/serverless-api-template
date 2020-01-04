@@ -11,9 +11,14 @@ plugins:
 
 provider:
   name: aws
-  stage: local
-  runtime: nodejs10.x
+  stage: ${self:custom.stage}
+  runtime: nodejs12.x
+  apiGateway:
+    # Enable gzip compression for responses > 1 KB
+    minimumCompressionSize: 1024
   environment:
+    NODE_ENV: PRODUCTION
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1 # https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
     LAMBDA_WRAPPER_LOG: true
     MESSAGES_TABLE: !Ref MessagesTable
     INVALIDATE_CACHE_TOPIC: !Ref InvalidateCacheTopic
@@ -29,10 +34,12 @@ provider:
         - dynamodb:Scan
         - dynamodb:PutItem
         - dynamodb:DeleteItem
+        - dynamodb:GetItem
       Resource: !GetAtt [MessagesTable, Arn]
 
 custom:
-  invalidateCacheTopic: ${self:service.name}-invalidate-cache-${opt:stage, self:provider.stage}
+  stage: ${opt:stage, env:STAGE, 'local'}
+  invalidateCacheTopic: ${self:service.name}-${opt:stage, self:provider.stage}-invalidate-cache
   # Serverless plugin configurations
   # https://github.com/manwaring/serverless-plugin-iam-checker
   iamChecker:
@@ -48,10 +55,25 @@ custom:
     number: 3
   # https://github.com/drexler/serverless-cloudformation-resource-counter
   warningThreshold: 100
+  # https://github.com/serverless-heaven/serverless-webpack
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules:
+      forceExclude:
+        - aws-sdk
+
+  package:
+    exclude:
+      - .git
+      - .env
+      - package-lock.json
+      - package.json
+      - README.md
+    excludeDevDependencies: true
 
 functions:
-  load-messages-snapshot:
-    handler: app/messages/load-snapshot.handler
+  load-sample-data:
+    handler: app/messages/sample-data/load.handler
 
   get-all-messages:
     handler: app/messages/get-all.handler
@@ -59,6 +81,17 @@ functions:
       - http:
           method: get
           path: messages
+
+  get-message:
+    handler: app/messages/get.handler
+    events:
+      - http:
+          method: get
+          path: messages/{id}
+          request:
+            parameters:
+              paths:
+                id: true
 
   add-message:
     handler: app/messages/add.handler
@@ -89,7 +122,7 @@ functions:
               paths:
                 id: true
 
-  invalidateCache:
+  invalidate-cache:
     handler: app/cache/invalidate.handler
     events:
       - stream:
@@ -102,7 +135,7 @@ functions:
       API_CLOUDFRONT: !Ref APICloudFrontDistribution
 
 resources:
-  Description: Serverless API starter using Serverless Framework and TypeScript for the ${opt:stage, self:provider.stage} stage
+  Description: Serverless API starter for the ${opt:stage, self:provider.stage} stage using Serverless Framework and TypeScript
 
   Resources:
     InvalidateCacheTopic:
@@ -127,7 +160,7 @@ resources:
       Type: AWS::CloudFront::Distribution
       Properties:
         DistributionConfig:
-          Comment: Powering the Pariveda Serverless Starter message service for the ${opt:stage, self:provider.stage} stage
+          Comment: Powering the ${opt:stage, self:provider.stage} Pariveda Serverless Starter
           CustomErrorResponses:
             - ErrorCachingMinTTL: 0
               ErrorCode: 503

@@ -1,0 +1,118 @@
+openapi: 3.0.0
+info:
+  title: Serverless API TypeScript
+  version: 0.0.1
+  description: API for the serverless starter
+  x-logo:
+    url: >-
+      https://user-images.githubusercontent.com/2955468/63987740-58392500-caa7-11e9-8c2e-06fc5fe9b91d.png
+    backgroundColor: '#FAFAFA'
+    altText: Logo
+components:
+  schemas:
+    CreateMessageRequest:
+      type: object
+      required:
+        - text
+        - author
+      properties:
+        text:
+          type: string
+        author:
+          type: string
+    MessageResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        author:
+          type: string
+paths:
+  /messages:
+    post:
+      summary: Save message
+      description: Creates and returns a new message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMessageRequest'
+      responses:
+        '200':
+          description: The newly created message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+    get:
+      summary: Get all messages
+      description: >-
+        Retreives all messages (doesn't currently handle database pagination and
+        so may truncate large result sets)
+      responses:
+        '200':
+          description: Array of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MessageResponse'
+  '/messages/{id}':
+    delete:
+      summary: Delete message
+      description: Deletes the message with specified ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the message to delete
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success response
+    get:
+      summary: Get message
+      description: Get message by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the message to get
+      responses:
+        '200':
+          description: The specified message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+    put:
+      summary: Update message
+      description: Updates and returns the given message
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the message to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMessageRequest'
+      responses:
+        '200':
+          description: The updated message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+tags: []

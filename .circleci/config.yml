@@ -13,13 +13,11 @@ anchors:
 
   python-container-config: &python-container-config
     docker:
-      - image: circleci/python:3.7.1
-        environment:
-          TERM: dumb
+      - image: circleci/python
 
   load-dependency-cache: &load-dependency-cache
     restore_cache:
-      key: dependency-cache-{{ checksum "package.json" }}
+      key: dependency-cache-{{ checksum "package-lock.json" }}
 
   configure-aws-access: &configure-aws-access
     run:
@@ -52,9 +50,9 @@ jobs:
       - *load-dependency-cache
       - run:
           name: Install dependencies
-          command: npm i
+          command: npm ci
       - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
 

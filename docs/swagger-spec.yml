@@ -1,3 +1,4 @@
+openapi: '3.0.0'
 info:
   title: Serverless API TypeScript
   version: '0.0.1'
@@ -6,5 +7,5 @@ info:
     url: https://user-images.githubusercontent.com/2955468/63987740-58392500-caa7-11e9-8c2e-06fc5fe9b91d.png
     backgroundColor: '#FAFAFA'
     altText: Logo
-apis:
-  - app/**/*.ts
+apis: [app/**/*.ts]
+components: {}
