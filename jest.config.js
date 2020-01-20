@@ -1,4 +1,4 @@
 module.exports = {
-  collectCoverageFrom: ['app/**/*.ts', '!app/**/*.e2e.ts', '!app/**/*index.ts'],
+  collectCoverageFrom: ['src/**/*.ts', '!src/**/*.e2e.ts', '!src/**/*index.ts'],
   coverageThreshold: { global: { lines: 50 } }
 };

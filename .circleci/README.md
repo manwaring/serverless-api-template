@@ -4,7 +4,7 @@ This project is setup to use [Trunk based development](https://trunkbaseddevelop
 
 Consider using a tool like [Odin](https://github.com/manwaring/odin) to automatically remove stale branches.
 
-![branches-ci-cd](../diagrams/lucidchart-branches-and-ci-cd.png)
+![branches-ci-cd](../diagrams/branches-and-ci-cd.png)
 
 ## Stage setup
 

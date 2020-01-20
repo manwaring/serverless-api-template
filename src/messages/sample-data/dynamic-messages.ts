@@ -1,7 +1,7 @@
 import { Chance } from 'chance';
 import { NonFunctionKeys } from 'utility-types';
 import { v4 } from 'uuid';
-import { CreateMessageRequest } from '../message';
+import { CreateMessageRequest, MessageRecord } from '../message';
 
 const chance = new Chance();
 
@@ -16,7 +16,13 @@ export const validUpdateMessage: Pick<CreateMessageRequest, NonFunctionKeys<Crea
   author: `${chance.first()} ${chance.last()}`
 };
 
-export const invalidCreateTrainer = {
-  message: chance.bool() ? chance.integer() : chance.bool(),
+export const validMessageRecord: Pick<MessageRecord, NonFunctionKeys<MessageRecord>> = {
+  id: v4(),
+  text: chance.paragraph(),
+  author: `${chance.first()} ${chance.last()}`
+};
+
+export const invalidCreateMessage = {
+  text: chance.bool() ? chance.integer() : chance.bool(),
   author: ''
 };

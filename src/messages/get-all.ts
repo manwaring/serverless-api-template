@@ -1,6 +1,6 @@
 import 'source-map-support/register';
 import { api } from '@manwaring/lambda-wrapper';
-import { messagesTable } from './table';
+import { getAll } from './table';
 
 /**
  *  @swagger
@@ -21,9 +21,9 @@ import { messagesTable } from './table';
  */
 export const handler = api(async ({ success, error }) => {
   try {
-    const messages = await messagesTable.getAll();
-    success(messages);
+    const messages = await getAll();
+    return success(messages);
   } catch (err) {
-    error(err);
+    return error(err);
   }
 });

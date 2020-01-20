@@ -1,5 +1,5 @@
 service:
-  name: serverless-api-typescript
+  name: serverless-api-template
 
 plugins:
   - serverless-webpack
@@ -11,11 +11,10 @@ plugins:
 
 provider:
   name: aws
-  stage: ${self:custom.stage}
+  stage: ${opt:stage, env:STAGE, env:USER, 'local'}
   runtime: nodejs12.x
   apiGateway:
-    # Enable gzip compression for responses > 1 KB
-    minimumCompressionSize: 1024
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:
     NODE_ENV: PRODUCTION
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1 # https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
@@ -38,8 +37,7 @@ provider:
       Resource: !GetAtt [MessagesTable, Arn]
 
 custom:
-  stage: ${opt:stage, env:STAGE, 'local'}
-  invalidateCacheTopic: ${self:service.name}-${opt:stage, self:provider.stage}-invalidate-cache
+  invalidateCacheTopic: ${self:service.name}-${self:provider.stage}-invalidate-cache
   # Serverless plugin configurations
   # https://github.com/manwaring/serverless-plugin-iam-checker
   iamChecker:
@@ -73,57 +71,62 @@ custom:
 
 functions:
   load-sample-data:
-    handler: app/messages/sample-data/load.handler
+    handler: src/messages/sample-data/load.handler
 
   get-all-messages:
-    handler: app/messages/get-all.handler
+    handler: src/messages/get-all.handler
     events:
       - http:
           method: get
-          path: messages
+          path: v1/messages
+          cors: true
 
   get-message:
-    handler: app/messages/get.handler
+    handler: src/messages/get.handler
     events:
       - http:
           method: get
-          path: messages/{id}
+          path: v1/messages/{id}
+          cors: true
           request:
             parameters:
               paths:
                 id: true
 
   add-message:
-    handler: app/messages/add.handler
+    handler: src/messages/add.handler
     events:
       - http:
           method: post
-          path: messages
+          path: v1/messages
+          cors: true
 
   delete-message:
-    handler: app/messages/delete.handler
+    handler: src/messages/delete.handler
     events:
       - http:
           method: delete
-          path: messages/{id}
+          path: v1/messages/{id}
+          cors: true
           request:
             parameters:
               paths:
                 id: true
 
   update-message:
-    handler: app/messages/update.handler
+    handler: src/messages/update.handler
     events:
       - http:
           method: put
-          path: messages/{id}
+          path: v1/messages/{id}
+          cors: true
           request:
             parameters:
               paths:
                 id: true
 
   invalidate-cache:
-    handler: app/cache/invalidate.handler
+    handler: src/cache/invalidate.handler
     events:
       - stream:
           type: dynamodb
@@ -132,10 +135,16 @@ functions:
           arn: !Ref InvalidateCacheTopic
           topicName: ${self:custom.invalidateCacheTopic}
     environment:
-      API_CLOUDFRONT: !Ref APICloudFrontDistribution
+      API_CLOUDFRONT: !If [IsPermanentStage, !Ref CDN, '']
 
 resources:
-  Description: Serverless API starter for the ${opt:stage, self:provider.stage} stage using Serverless Framework and TypeScript
+  Description: The ${self:provider.stage} version of the Serverless API starter using the Serverless Framework and TypeScript
+
+  Conditions:
+    IsPermanentStage: !Or
+      - !Equals ['${self:provider.stage}', prod]
+      - !Equals ['${self:provider.stage}', staging]
+      - !Equals ['${self:provider.stage}', dev]
 
   Resources:
     InvalidateCacheTopic:
@@ -156,31 +165,30 @@ resources:
         StreamSpecification:
           StreamViewType: NEW_AND_OLD_IMAGES
 
-    APICloudFrontDistribution:
+    CDN:
       Type: AWS::CloudFront::Distribution
+      Condition: IsPermanentStage
       Properties:
         DistributionConfig:
-          Comment: Powering the ${opt:stage, self:provider.stage} Pariveda Serverless Starter
+          Comment: Powering the ${self:provider.stage} Pariveda Serverless Starter
           CustomErrorResponses:
-            - ErrorCachingMinTTL: 0
-              ErrorCode: 503
+            - ErrorCode: 503
+              ErrorCachingMinTTL: 0
+            - ErrorCode: 404
+              ErrorCachingMinTTL: 0
           DefaultCacheBehavior:
-            AllowedMethods:
-              - GET
-              - HEAD
-              - OPTIONS
-              - PUT
-              - PATCH
-              - POST
-              - DELETE
-            TargetOriginId: APIGateway
-            ViewerProtocolPolicy: 'redirect-to-https'
+            TargetOriginId: api
+            AllowedMethods: [GET, HEAD, OPTIONS, PUT, PATCH, POST, DELETE]
+            CachedMethods: [GET, HEAD, OPTIONS]
+            ViewerProtocolPolicy: redirect-to-https
             DefaultTTL: 2592000
             ForwardedValues:
               QueryString: true
+              Headers: [Accept, Referer, Authorization, Content-Type]
           Enabled: true
+          PriceClass: PriceClass_100
           Origins:
-            - Id: APIGateway
+            - Id: api
               DomainName:
                 Fn::Join:
                   - '.'
@@ -188,10 +196,8 @@ resources:
                     - execute-api
                     - !Ref AWS::Region
                     - amazonaws.com
-              OriginPath: /${opt:stage, self:provider.stage}
+              OriginPath: /${self:provider.stage}
               CustomOriginConfig:
-                HTTPPort: 80
-                HTTPSPort: 443
                 OriginProtocolPolicy: https-only
 
     ApiDocumentationBucket:
@@ -230,9 +236,6 @@ resources:
       Description: URL for Api documentation website
 
     CloudFrontEndpoint:
+      Condition: IsPermanentStage
       Description: URL of the CloudFront endpoint
-      Value:
-        Fn::Join:
-          - ''
-          - - https://
-            - !GetAtt [APICloudFrontDistribution, DomainName]
+      Value: !Join ['', [https://, !GetAtt [CDN, DomainName]]]

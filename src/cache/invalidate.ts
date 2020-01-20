@@ -1,11 +1,11 @@
 import { wrapper } from '@manwaring/lambda-wrapper';
-import { cdn } from './cdn';
+import { invalidateCache } from './cdn';
 
 export const handler = wrapper(async ({ success, error }) => {
   try {
-    await cdn.invalidateCache();
-    success('Successfully invalidated CDN');
+    const results = await invalidateCache();
+    return success(results);
   } catch (err) {
-    error(err);
+    return error(err);
   }
 });

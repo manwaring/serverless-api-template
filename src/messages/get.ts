@@ -1,6 +1,6 @@
 import 'source-map-support/register';
 import { api, ApiSignature } from '@manwaring/lambda-wrapper';
-import { messagesTable } from './table';
+import { get, RecordNotFoundError } from './table';
 
 /**
  *  @swagger
@@ -25,11 +25,15 @@ import { messagesTable } from './table';
  *                  $ref: '#/components/schemas/MessageResponse'
  */
 
-export const handler = api(async ({ path, success, error }: ApiSignature) => {
+export const handler = api(async ({ path, success, notFound, error }: ApiSignature) => {
   try {
-    const trainer = await messagesTable.get(path.id);
-    success(trainer);
+    const trainer = await get(path.id);
+    return success(trainer);
   } catch (err) {
-    error(err);
+    if (err instanceof RecordNotFoundError) {
+      return notFound();
+    } else {
+      return error(err);
+    }
   }
 });

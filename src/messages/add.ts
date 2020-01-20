@@ -1,7 +1,7 @@
 import 'source-map-support/register';
 import { api } from '@manwaring/lambda-wrapper';
 import { CreateMessageRequest } from './message';
-import { messagesTable } from './table';
+import { add } from './table';
 import { validateOrReject, ValidationError } from 'class-validator';
 
 /**
@@ -29,13 +29,17 @@ export const handler = api(async ({ body, success, invalid, error }) => {
   try {
     const createMessageRequest = new CreateMessageRequest(body);
     await validateOrReject(createMessageRequest, { validationError: { target: false }, forbidNonWhitelisted: true });
-    const messageResponse = await messagesTable.add(createMessageRequest);
-    success(messageResponse);
+    const messageResponse = await add(createMessageRequest);
+    return success(messageResponse);
   } catch (err) {
-    if (Array.isArray(err) && err[0] instanceof ValidationError) {
-      invalid(err);
+    if (isValidationError(err)) {
+      return invalid(err);
     } else {
-      error(err);
+      return error(err);
     }
   }
 });
+
+function isValidationError(err: any) {
+  return Array.isArray(err) && err[0] instanceof ValidationError;
+}

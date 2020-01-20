@@ -1,4 +1,5 @@
 import { v4 } from 'uuid';
+import { DynamoDB } from 'aws-sdk';
 import { NonFunctionKeys } from 'utility-types';
 import { IsString } from 'class-validator';
 
@@ -17,13 +18,11 @@ import { IsString } from 'class-validator';
  *          author:
  *            type: string
  */
-
 export class CreateMessageRequest {
   id?: string;
 
   @IsString()
   text: string;
-
   @IsString()
   author: string;
 
@@ -42,7 +41,7 @@ export class MessageRecord {
   id?: string;
   text: string;
   author: string;
-  constructor(init: Pick<MessageRecord, NonFunctionKeys<MessageRecord>>) {
+  constructor(init: Pick<MessageRecord, NonFunctionKeys<MessageRecord>> | DynamoDB.DocumentClient.AttributeMap) {
     this.id = init.id;
     this.text = init.text;
     this.author = init.author;

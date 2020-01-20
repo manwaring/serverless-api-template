@@ -1,6 +1,6 @@
 import 'source-map-support/register';
 import { api } from '@manwaring/lambda-wrapper';
-import { messagesTable } from './table';
+import { del, RecordNotFoundError } from './table';
 
 /**
  *  @swagger
@@ -20,11 +20,15 @@ import { messagesTable } from './table';
  *          200:
  *            description: Success response
  */
-export const handler = api(async ({ path, success, error }) => {
+export const handler = api(async ({ path, success, notFound, error }) => {
   try {
-    await messagesTable.del(path.id);
-    success();
+    await del(path.id);
+    return success();
   } catch (err) {
-    error(err);
+    if (err instanceof RecordNotFoundError) {
+      return notFound();
+    } else {
+      return error(err);
+    }
   }
 });

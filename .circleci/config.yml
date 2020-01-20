@@ -19,6 +19,12 @@ anchors:
     restore_cache:
       key: dependency-cache-{{ checksum "package-lock.json" }}
 
+  save-dependency-cache: &save-dependency-cache
+    save_cache:
+      key: dependency-cache-{{ checksum "package-lock.json" }}
+      paths:
+        - node_modules
+
   configure-aws-access: &configure-aws-access
     run:
       name: Configure AWS access
@@ -51,10 +57,7 @@ jobs:
       - run:
           name: Install dependencies
           command: npm ci
-      - save_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
-          paths:
-            - node_modules
+      - *save-dependency-cache
 
   unit-test:
     <<: *node-container-config
@@ -98,7 +101,6 @@ jobs:
       - *configure-aws-access
       - run:
           name: Deploy stack
-          no_output_timeout: 90m # increase timeout to allow for CloudFront deployment
           command: |
             STAGE=<< parameters.stage >>
             [[ ! -z "$STAGE" ]] || STAGE=${CIRCLE_BRANCH%%/*}
@@ -113,11 +115,6 @@ jobs:
   test-deployed-app:
     description: Test the app deployed to the specified stage
     <<: *node-container-config
-    parameters:
-      stage:
-        description: Stage to test
-        type: string
-        default: ''
     steps:
       - checkout
       - *load-dependency-cache
@@ -163,19 +160,19 @@ workflows:
 
   build-test-and-deploy:
     jobs:
-      # Always install, unit test, and generate API documentation
+      # always install, unit test, and generate API documentation
       - install
       - generate-docs:
           requires: [install]
       - unit-test:
           requires: [install]
 
-      # On non-master branches deploy and test branch-based ephemeral stages
+      # for non-master branches deploy and test branch-based ephemeral stages
       - deploy:
           name: deploy-branch
           <<: *only-branches
           context: pariveda-serverless-aws
-          requires: [unit-test]
+          requires: [unit-test, generate-docs]
       - test-deployed-app:
           name: test-branch
           <<: *only-branches
@@ -186,18 +183,18 @@ workflows:
           context: pariveda-serverless-aws
           requires: [deploy-branch]
 
-      # On master branches deploy and test to long-lived branches up to production
+      # for master branches deploy and test to long-lived branches up to production
+
+      # dev
       - deploy:
           name: deploy-dev
           stage: dev
           <<: *only-master
           context: pariveda-serverless-aws
-          requires: [unit-test]
+          requires: [unit-test, generate-docs]
       - test-deployed-app:
           name: test-dev
-          stage: dev
           <<: *only-master
-          context: pariveda-serverless-aws
           requires: [deploy-dev]
       - publish-docs:
           name: publish-docs-dev
@@ -206,15 +203,15 @@ workflows:
           context: pariveda-serverless-aws
           requires: [deploy-dev]
 
+      # staging
       - deploy:
           name: deploy-staging
           stage: staging
           <<: *only-master
           context: pariveda-serverless-aws
-          requires: [test-dev]
+          requires: [publish-docs-dev]
       - test-deployed-app:
           name: test-staging
-          stage: staging
           <<: *only-master
           requires: [deploy-staging]
       - publish-docs:
@@ -226,7 +223,7 @@ workflows:
 
       - prod-approval:
           type: approval
-          requires: [test-staging]
+          requires: [publish-docs-staging]
       - deploy:
           name: deploy-prod
           stage: prod
@@ -235,7 +232,6 @@ workflows:
           requires: [prod-approval]
       - test-deployed-app:
           name: test-prod
-          stage: prod
           <<: *only-master
           requires: [deploy-prod]
       - publish-docs:
