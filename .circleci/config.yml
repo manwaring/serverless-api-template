@@ -209,7 +209,7 @@ workflows:
           stage: staging
           <<: *only-master
           context: pariveda-serverless-aws
-          requires: [publish-docs-dev]
+          requires: [publish-docs-dev, test-dev]
       - test-deployed-app:
           name: test-staging
           <<: *only-master
@@ -223,7 +223,7 @@ workflows:
 
       - prod-approval:
           type: approval
-          requires: [publish-docs-staging]
+          requires: [publish-docs-staging, test-staging]
       - deploy:
           name: deploy-prod
           stage: prod
