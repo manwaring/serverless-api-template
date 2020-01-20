@@ -135,7 +135,7 @@ functions:
           arn: !Ref InvalidateCacheTopic
           topicName: ${self:custom.invalidateCacheTopic}
     environment:
-      API_CLOUDFRONT: !If [IsPermanentStage, !Ref CDN, '']
+      CLOUDFRONT: !If [IsPermanentStage, !Ref CDN, '']
 
 resources:
   Description: The ${self:provider.stage} version of the Serverless API starter using the Serverless Framework and TypeScript

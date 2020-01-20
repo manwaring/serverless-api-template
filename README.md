@@ -193,11 +193,13 @@ _Note that all of the serverless commands are run through package.json scripts -
 
 # Application architecture
 
-## Permanent stages
+### Permanent stages
 
 <img height="300" src="diagrams/permanent-stage-architecture.png">
 
-Permanent stages have two endpoints available for calling the API - one via API Gateway directly, and one via CloudFront. Note that calling the API Gateway directly bypasses CDN caching and so won't show performance benefits on subsequent calls.
+Permanent stages (dev, staging, and prod) have two endpoints available for calling the API - one via API Gateway directly, and one via CloudFront. Note that calling the API Gateway directly bypasses CDN caching and so won't show performance benefits on subsequent calls.
+
+### Ephemeral stages
 
 <img height="220" src="diagrams/ephemeral-stage-architecture.png">
 
@@ -205,12 +207,16 @@ Ephemeral stages have one endpoint available for calling the API - the one gener
 
 <img height="300" src="diagrams/screenshots/cloudformation-outputs.png">
 
+### API Endpoints
+
 To see the endpoints check the output section of the deployed CloudFormation stack. You can view them in the [CloudFormation console][cf console] or via the AWS CLI, etc.
+[cf console]: https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks
+
+### API documentation
 
 The api documentation is generated with swagger and hosted on a [repo-specific GitHub page][doc url].
 
 [doc url]: https://pariveda-accelerators.github.io/serverless-api-typescript
-[cf console]: https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks
 
 # CI/CD
 
@@ -224,12 +230,12 @@ Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 TypeScript                      20             94            158            653
 YAML                             6             41             24            453
-Markdown                         3            112              0            227
+Markdown                         3            115              0            230
 JSON                             4              0              0            166
 JavaScript                       5              1              1             95
 HTML                             1              1              4             20
 -------------------------------------------------------------------------------
-SUM:                            39            249            187           1614
+SUM:                            39            252            187           1617
 -------------------------------------------------------------------------------
 ```
 
