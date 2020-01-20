@@ -24,7 +24,7 @@ describe('Messages CRUD', () => {
   it('Gets the message', async () => {
     if (CDN_URL) {
       // Allow some time for the cache to clear
-      await sleep(4000);
+      await sleep(8000);
     }
     const response = await get(`${URL}/${message.id}`, options);
     assertMessagePropertiesMatch(response.body, validCreateMessage);
@@ -33,7 +33,7 @@ describe('Messages CRUD', () => {
   it('Gets all messages', async () => {
     if (CDN_URL) {
       // Allow some time for the cache to clear
-      await sleep(5000);
+      await sleep(8000);
     }
     const response = await get(URL, options);
     expect(response.statusCode).toEqual(200);
@@ -51,7 +51,7 @@ describe('Messages CRUD', () => {
   it('Message no longer found', async () => {
     if (CDN_URL) {
       // Allow some time for the cache to clear
-      await sleep(4000);
+      await sleep(8000);
     }
     const response = await get(`${URL}/${message.id}`, options);
     expect(response.statusCode).toEqual(404);
@@ -60,7 +60,7 @@ describe('Messages CRUD', () => {
   it('Gets all messages after delete', async () => {
     if (CDN_URL) {
       // Allow some time for the cache to clear
-      await sleep(4000);
+      await sleep(8000);
     }
     const messages = await get(URL, options);
     expect(messages.body).toBeInstanceOf(Array);
