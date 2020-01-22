@@ -228,8 +228,9 @@ To see the endpoints check the output section of the deployed CloudFormation sta
 
 ### API documentation
 
-The api documentation is generated with swagger and hosted on a [repo-specific GitHub page][doc url].
+The api documentation is generated with [OpenAPI][openapi] and hosted on a [repo-specific GitHub page][doc url].
 
+[openapi]: https://swagger.io/docs/specification/about/
 [doc url]: https://pariveda-accelerators.github.io/serverless-api-template
 
 # CI/CD
