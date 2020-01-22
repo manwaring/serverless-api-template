@@ -3,7 +3,20 @@
   <img height="140" src="diagrams/icons/starter.png"/>
 </p>
 
-[![build]][build-url] [![coverage]][coverage-url] [![dependabot]][dependabot-url] [![dependencies]][dependencies-url] [![dev-dependencies]][dev-dependencies-url] [![license]][license-url]
+<p align="center">
+  <a href="https://circleci.com/gh/pariveda-accelerators/serverless-api-template">
+    <img src="https://flat.badgen.net/circleci/github/pariveda-accelerators/serverless-api-template/master/?icon=circleci"></a>
+  <a href="https://codecov.io/gh/pariveda-accelerators/serverless-api-template">
+    <img src="https://flat.badgen.net/codecov/c/github/pariveda-accelerators/serverless-api-template/?icon=codecov"></a>
+  <a href="https://flat.badgen.net/dependabot/pariveda-accelerators/serverless-api-template">
+    <img src="https://flat.badgen.net/dependabot/pariveda-accelerators/serverless-api-template/?icon=dependabot&label=dependabot"></a>
+  <a href="https://david-dm.org/pariveda-accelerators/serverless-api-template">
+    <img src="https://flat.badgen.net/david/dep/pariveda-accelerators/serverless-api-template"></a>
+  <a href="https://david-dm.org/pariveda-accelerators/serverless-api-template?type=dev">
+    <img src="https://flat.badgen.net/david/dev/pariveda-accelerators/serverless-api-template/?label=dev+dependencies"></a>
+  <a href="https://github.com/pariveda-accelerators/serverless-api-template/blob/master/LICENSE">
+    <img src="https://flat.badgen.net/github/license/pariveda-accelerators/serverless-api-template"></a>
+</p>
 
 # Serverless API starter template
 
@@ -244,18 +257,18 @@ Generated using `yarn run project-stats`
 
 <!-- badge icons -->
 
-[coverage]: https://flat.badgen.net/codecov/c/github/pariveda-accelerators/serverless-api-typescript/?icon=codecov
-[license]: https://flat.badgen.net/github/license/pariveda-accelerators/serverless-api-typescript
-[build]: https://flat.badgen.net/circleci/github/pariveda-accelerators/serverless-api-typescript/master/?icon=circleci
-[dependabot]: https://flat.badgen.net/dependabot/pariveda-accelerators/serverless-api-typescript/?icon=dependabot&label=dependabot
-[dependencies]: https://flat.badgen.net/david/dep/pariveda-accelerators/serverless-api-typescript
-[dev-dependencies]: https://flat.badgen.net/david/dev/pariveda-accelerators/serverless-api-typescript/?label=dev+dependencies
+[coverage]: https://flat.badgen.net/codecov/c/github/pariveda-accelerators/serverless-api-template/?icon=codecov
+[license]: https://flat.badgen.net/github/license/pariveda-accelerators/serverless-api-template
+[build]: https://flat.badgen.net/circleci/github/pariveda-accelerators/serverless-api-template/master/?icon=circleci
+[dependabot]: https://flat.badgen.net/dependabot/pariveda-accelerators/serverless-api-template/?icon=dependabot&label=dependabot
+[dependencies]: https://flat.badgen.net/david/dep/pariveda-accelerators/serverless-api-template
+[dev-dependencies]: https://flat.badgen.net/david/dev/pariveda-accelerators/serverless-api-template/?label=dev+dependencies
 
 <!-- badge urls -->
 
-[coverage-url]: https://codecov.io/gh/pariveda-accelerators/serverless-api-typescript
-[license-url]: https://github.com/pariveda-accelerators/serverless-api-typescript
-[build-url]: https://circleci.com/gh/pariveda-accelerators/serverless-api-typescript
-[dependabot-url]: https://flat.badgen.net/dependabot/pariveda-accelerators/serverless-api-typescript
-[dependencies-url]: https://david-dm.org/pariveda-accelerators/serverless-api-typescript
-[dev-dependencies-url]: https://david-dm.org/pariveda-accelerators/serverless-api-typescript?type=dev
+[coverage-url]: https://codecov.io/gh/pariveda-accelerators/serverless-api-template
+[license-url]: https://github.com/pariveda-accelerators/serverless-api-template
+[build-url]: https://circleci.com/gh/pariveda-accelerators/serverless-api-template
+[dependabot-url]: https://flat.badgen.net/dependabot/pariveda-accelerators/serverless-api-template
+[dependencies-url]: https://david-dm.org/pariveda-accelerators/serverless-api-template
+[dev-dependencies-url]: https://david-dm.org/pariveda-accelerators/serverless-api-template?type=dev
