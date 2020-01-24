@@ -1,5 +1,4 @@
-import createEvent from '@serverless/event-mocks';
-import { context } from 'serverless-plugin-test-helper';
+import { context, apiGatewayEvent } from 'serverless-plugin-test-helper';
 
 const AWS = require('aws-sdk');
 jest.mock('aws-sdk', () => ({
@@ -18,9 +17,8 @@ describe('Deletes message', () => {
 
   it('Successfully deletes specified message', async () => {
     const { handler } = require('./delete');
-    // @ts-ignore
-    const event = createEvent('aws:apiGateway');
-    const response = await handler(event, context, () => {});
+    const event = apiGatewayEvent({ pathParameters: { id: 'id' } });
+    const response = await handler(event, context);
 
     expect(response && response.statusCode).toBe(200);
   });
@@ -38,9 +36,8 @@ describe('Deletes message', () => {
       }
     }));
     const { handler } = require('./delete');
-    // @ts-ignore
-    const event = createEvent('aws:apiGateway');
-    const response = await handler(event, context, () => {});
+    const event = apiGatewayEvent({ pathParameters: { id: 'id' } });
+    const response = await handler(event, context);
 
     expect(response.statusCode).toBe(404);
   });
@@ -58,9 +55,8 @@ describe('Deletes message', () => {
       }
     }));
     const { handler } = require('./delete');
-    // @ts-ignore
-    const event = createEvent('aws:apiGateway');
-    const response = await handler(event, context, () => {});
+    const event = apiGatewayEvent({ pathParameters: { id: 'id' } });
+    const response = await handler(event, context);
 
     expect(response.statusCode).toBe(500);
   });

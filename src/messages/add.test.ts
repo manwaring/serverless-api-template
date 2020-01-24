@@ -1,5 +1,4 @@
-import createEvent from '@serverless/event-mocks';
-import { context } from 'serverless-plugin-test-helper';
+import { context, apiGatewayEvent } from 'serverless-plugin-test-helper';
 import { validCreateMessage, invalidCreateMessage } from './sample-data/dynamic-messages';
 
 const AWS = require('aws-sdk');
@@ -19,9 +18,8 @@ describe('Add message', () => {
 
   it('Return success response for valid add message request', async () => {
     const { handler } = require('./add');
-    // @ts-ignore
-    const event = createEvent('aws:apiGateway', { headers, body: JSON.stringify(validCreateMessage) });
-    const response = await handler(event, context, () => {});
+    const event = apiGatewayEvent({ headers, body: JSON.stringify(validCreateMessage) });
+    const response = await handler(event, context);
 
     expect(response.statusCode).toEqual(200);
     const message = JSON.parse(response.body);
@@ -32,9 +30,8 @@ describe('Add message', () => {
 
   it('Returns invalid response for invalid add message request', async () => {
     const { handler } = require('./add');
-    // @ts-ignore
-    const event = createEvent('aws:apiGateway', { headers, body: JSON.stringify(invalidCreateMessage) });
-    const response = await handler(event, context, () => {});
+    const event = apiGatewayEvent({ headers, body: JSON.stringify(invalidCreateMessage) });
+    const response = await handler(event, context);
 
     expect(response.statusCode).toBe(400);
   });
@@ -52,9 +49,8 @@ describe('Add message', () => {
       }
     }));
     const { handler } = require('./add');
-    // @ts-ignore
-    const event = createEvent('aws:apiGateway', { headers, body: JSON.stringify(validCreateMessage) });
-    const response = await handler(event, context, () => {});
+    const event = apiGatewayEvent({ headers, body: JSON.stringify(validCreateMessage) });
+    const response = await handler(event, context);
 
     expect(response.statusCode).toBe(500);
   });

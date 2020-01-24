@@ -1,5 +1,4 @@
-import createEvent from '@serverless/event-mocks';
-import { context } from 'serverless-plugin-test-helper';
+import { context, dynamoDBStreamEvent } from 'serverless-plugin-test-helper';
 
 const AWS = require('aws-sdk');
 jest.mock('aws-sdk', () => ({
@@ -19,17 +18,16 @@ describe('Invalidate CDN', () => {
   it('Successfully invalidates when CDN is present', async () => {
     process.env = { ...process.env, CLOUDFRONT: 'this is cloudfront' };
     const { handler } = require('./invalidate');
-    // @ts-ignore
-    const event = createEvent('aws:dynamo');
-    const response = await handler(event, context, () => {});
+    const event = dynamoDBStreamEvent();
+    const response = await handler(event, context);
+
     expect(response).toEqual('Successfully invalidated CDN');
   });
 
   it('Successfully ignores when no CDN is present', async () => {
     const { handler } = require('./invalidate');
-    // @ts-ignore
-    const event = createEvent('aws:dynamo');
-    const response = await handler(event, context, () => {});
+    const event = dynamoDBStreamEvent();
+    const response = await handler(event, context);
 
     expect(response).toEqual('No CDN to invalidate');
   });

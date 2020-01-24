@@ -1,5 +1,4 @@
-import createEvent from '@serverless/event-mocks';
-import { context } from 'serverless-plugin-test-helper';
+import { context, apiGatewayEvent } from 'serverless-plugin-test-helper';
 import { validMessageRecord as mockRecord } from './sample-data/dynamic-messages';
 
 const AWS = require('aws-sdk');
@@ -19,9 +18,8 @@ describe('Get all messages', () => {
 
   it('Successfully returns all messages', async () => {
     const { handler } = require('./get-all');
-    // @ts-ignore
-    const event = createEvent('aws:apiGateway');
-    const response = await handler(event, context, () => {});
+    const event = apiGatewayEvent();
+    const response = await handler(event, context);
 
     expect(response.statusCode).toBe(200);
   });
@@ -39,9 +37,8 @@ describe('Get all messages', () => {
       }
     }));
     const { handler } = require('./get-all');
-    // @ts-ignore
-    const event = createEvent('aws:apiGateway');
-    const response = await handler(event, context, () => {});
+    const event = apiGatewayEvent();
+    const response = await handler(event, context);
 
     expect(response.statusCode).toBe(500);
   });
