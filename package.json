@@ -52,7 +52,7 @@
     "serverless-cloudformation-resource-counter": "^1.0.2",
     "serverless-lumigo": "^1.6.1",
     "serverless-plugin-iam-checker": "^1.0.2",
-    "serverless-plugin-test-helper": "^2.0.1",
+    "serverless-plugin-test-helper": "^2.0.2",
     "serverless-prune-plugin": "^1.4.0",
     "serverless-webpack": "^5.2.0",
     "swagger-jsdoc": "^3.5.0",
