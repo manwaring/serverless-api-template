@@ -28,7 +28,7 @@ import { get, RecordNotFoundError } from './table';
 export const handler = api(async ({ path, success, notFound, error }: ApiSignature) => {
   try {
     const trainer = await get(path.id);
-    return success(trainer);
+    return success({ body: trainer });
   } catch (err) {
     if (err instanceof RecordNotFoundError) {
       return notFound();

@@ -3,7 +3,6 @@ import { api } from '@manwaring/lambda-wrapper';
 import { CreateMessageRequest } from './message';
 import { update, RecordNotFoundError } from './table';
 import { validateOrReject, ValidationError } from 'class-validator';
-import { notFound } from '@manwaring/lambda-wrapper/dist/api/responses';
 
 /**
  *  @swagger
@@ -33,12 +32,12 @@ import { notFound } from '@manwaring/lambda-wrapper/dist/api/responses';
  *                schema:
  *                  $ref: '#/components/schemas/MessageResponse'
  */
-export const handler = api(async ({ body, success, invalid, error }) => {
+export const handler = api(async ({ body, success, invalid, error, notFound }) => {
   try {
     const createMessageRequest = new CreateMessageRequest(body);
     await validateOrReject(createMessageRequest, { validationError: { target: false }, forbidNonWhitelisted: true });
     const message = await update(createMessageRequest);
-    return success(message);
+    return success({ body: message });
   } catch (err) {
     if (err instanceof RecordNotFoundError) {
       return notFound();

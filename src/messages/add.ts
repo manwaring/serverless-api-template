@@ -29,8 +29,8 @@ export const handler = api(async ({ body, success, invalid, error }) => {
   try {
     const createMessageRequest = new CreateMessageRequest(body);
     await validateOrReject(createMessageRequest, { validationError: { target: false }, forbidNonWhitelisted: true });
-    const messageResponse = await add(createMessageRequest);
-    return success(messageResponse);
+    const message = await add(createMessageRequest);
+    return success({ body: message });
   } catch (err) {
     if (isValidationError(err)) {
       return invalid(err);

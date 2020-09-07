@@ -22,7 +22,7 @@ import { getAll } from './table';
 export const handler = api(async ({ success, error }) => {
   try {
     const messages = await getAll();
-    return success(messages);
+    return success({ body: messages });
   } catch (err) {
     return error(err);
   }
