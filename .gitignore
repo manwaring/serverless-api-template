@@ -20,3 +20,5 @@ _lumigo
 
 # secrets
 .env
+
+.vscode
