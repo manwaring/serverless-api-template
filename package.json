@@ -12,7 +12,8 @@
     "serve-docs": "live-server docs",
     "generate-docs": "swagger-jsdoc -d docs/openapi-spec.yml -o docs/openapi.yml",
     "codecov": "codecov -f coverage/*.json",
-    "project-stats": "cloc . --quiet --exclude-dir=.serverless,.webpack,coverage,node_modules,package-lock.json"
+    "project-stats": "cloc . --quiet --exclude-dir=.serverless,.webpack,coverage,node_modules,package-lock.json",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@manwaring/lambda-wrapper": "^4.4.4",
@@ -65,11 +66,6 @@
   },
   "jest": {
     "preset": "ts-jest"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm test && npm run generate-docs && git add docs"
-    }
   },
   "author": "Made with ♥ by Phillip Manwaring",
   "license": "MIT"
