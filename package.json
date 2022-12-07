@@ -49,7 +49,7 @@
     "live-server": "^1.2.1",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",
-    "serverless": "^2.43.1",
+    "serverless": "^3.25.1",
     "serverless-cloudformation-resource-counter": "^1.1.1",
     "serverless-lumigo": "^1.12.5",
     "serverless-plugin-iam-checker": "^1.0.8",
