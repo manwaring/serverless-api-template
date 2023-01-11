@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@manwaring/lambda-wrapper": "^4.4.4",
-    "class-validator": "^0.13.1",
+    "class-validator": "^0.14.0",
     "source-map-support": "^0.5.19",
     "ts-custom-error": "^3.2.0",
     "utility-types": "^3.10.0",
